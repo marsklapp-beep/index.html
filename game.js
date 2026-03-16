@@ -2,16 +2,6 @@
 let audioCtx = null;
 let activeOscillators = [];
 
-// --- GENDER AVATARS PER CLASS ---
-const CLASS_GENDER_AVATARS = {
-    warrior: { male: '🤺', female: '💂‍♀️' },
-    mage:    { male: '🧙‍♂️', female: '🧙‍♀️' },
-    paladin: { male: '🛡️', female: '⚔️' },
-    ninja:   { male: '🥷', female: '🥷' },
-    cleric:  { male: '🧑‍⚕️', female: '👩‍⚕️' },
-    archer:  { male: '🏹', female: '🎯' }
-};
-
 function setAvatarDisplay(elementId, avatar) {
     const el = document.getElementById(elementId);
     if (!el) return;

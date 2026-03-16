@@ -242,6 +242,16 @@ const CLASSES = {
     }
 };
 
+// Gender-specific avatars per class
+const CLASS_GENDER_AVATARS = {
+    warrior: { male: '🤺', female: '💂‍♀️' },
+    mage:    { male: '🧙‍♂️', female: '🧙‍♀️' },
+    paladin: { male: '🛡️', female: '⚔️' },
+    ninja:   { male: '🥷', female: '🥷' },
+    cleric:  { male: '🧑‍⚕️', female: '👩‍⚕️' },
+    archer:  { male: '🏹', female: '🎯' }
+};
+
 // Specific Enemy Pools per mode
 const ENEMIES_HUNT = [
     { name: 'Boar', avatar: '🐗', hpMult: 1.2, dmgMult: 0.8 }, { name: 'Wolf', avatar: '🐺', hpMult: 0.8, dmgMult: 1.2 }, { name: 'Bear', avatar: '🐻', hpMult: 1.5, dmgMult: 1.0 }, { name: 'Spider', avatar: '🕷️', hpMult: 0.7, dmgMult: 1.5 }, { name: 'Snake', avatar: '🐍', hpMult: 0.6, dmgMult: 1.8 }, { name: 'Treant', avatar: '🌲', hpMult: 1.8, dmgMult: 0.7 }, { name: 'Dire Bat', avatar: '🦇', hpMult: 0.6, dmgMult: 1.4 }, { name: 'Giant Toad', avatar: '🐸', hpMult: 1.3, dmgMult: 0.9 },
