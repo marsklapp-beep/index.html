@@ -472,7 +472,14 @@ function applyDefaults(target, defaults) {
 }
 
 function loadGameAndContinue() {
+    try {
+    if (typeof CLASSES === 'undefined') {
+        console.error('loadGameAndContinue: CLASSES is not defined. Ensure data.js is loaded.');
+        return;
+    }
     const saved = localStorage.getItem('EternalAscensionSaveDataV1') || localStorage.getItem('fogFighterSaveDataV22') || localStorage.getItem('fogFighterSaveDataV21') || localStorage.getItem('fogFighterSaveDataV20');
+    const savedKey = localStorage.getItem('EternalAscensionSaveDataV1') ? 'EternalAscensionSaveDataV1' : localStorage.getItem('fogFighterSaveDataV22') ? 'fogFighterSaveDataV22' : localStorage.getItem('fogFighterSaveDataV21') ? 'fogFighterSaveDataV21' : localStorage.getItem('fogFighterSaveDataV20') ? 'fogFighterSaveDataV20' : null;
+    console.log('loadGameAndContinue: saved data found =', !!saved, 'key =', savedKey);
     if(saved) {
         const savedJson = saved.includes('|') ? saved.split('|')[0] : saved;
         const data = JSON.parse(savedJson); globalProgression = data.global; player = data.pState;
@@ -614,6 +621,9 @@ function loadGameAndContinue() {
         if (genderAvatars) { player.data = { ...player.data, avatar: genderAvatars[globalProgression.gender] }; }
 
         showHub();
+    }
+    } catch (err) {
+        console.error('loadGameAndContinue: failed to load game:', err);
     }
 }
 window.onload = () => { if(localStorage.getItem('EternalAscensionSaveDataV1') || localStorage.getItem('fogFighterSaveDataV22') || localStorage.getItem('fogFighterSaveDataV21') || localStorage.getItem('fogFighterSaveDataV20')) document.getElementById('btn-continue-save').classList.remove('hidden'); updateEnergy(); updateHp(); };
@@ -800,49 +810,59 @@ function showGenderSelect(classId) {
 }
 
 function selectGenderAndStart(gender) {
-    const classSaveKey = 'EternalAscensionClassSave_' + pendingClassId;
-    const classSave = localStorage.getItem(classSaveKey);
-    const isNewGame = pendingNewGame;
-    pendingNewGame = false;
+    try {
+        if (typeof CLASSES === 'undefined') {
+            console.error('selectGenderAndStart: CLASSES is not defined. Ensure data.js is loaded.');
+            return;
+        }
+        const classSaveKey = 'EternalAscensionClassSave_' + pendingClassId;
+        const classSave = localStorage.getItem(classSaveKey);
+        const isNewGame = pendingNewGame;
+        pendingNewGame = false;
 
-    if (!isNewGame && classSave) {
-        // Load existing class-specific save, preserve globalProgression
-        const data = JSON.parse(classSave);
-        player = data.pState;
-        player.classId = pendingClassId;
-        player.data = CLASSES[player.classId];
-        globalProgression.gender = gender;
-        let avatarMap = CLASS_GENDER_AVATARS[pendingClassId];
-        if (avatarMap) {
-            player.data = { ...player.data, avatar: avatarMap[gender] };
-            setAvatarDisplay('hub-avatar', player.data.avatar);
-        }
-    } else if (!isNewGame) {
-        // Switching to a new class with no prior save: init player, keep globalProgression
-        globalProgression.gender = gender;
-        globalProgression.attributes = getClassBaseAttributes(pendingClassId);
-        player = createFreshPlayer(pendingClassId);
-        let avatarMap = CLASS_GENDER_AVATARS[pendingClassId];
-        if (avatarMap) {
-            player.data = { ...player.data, avatar: avatarMap[gender] };
-        }
-        player.maxHp = calculateMaxHp();
-        player.currentHp = player.maxHp;
-    } else {
-        // Explicit new game: full reset
-        startGame(pendingClassId);
-        globalProgression.gender = gender;
-        let avatarMap = CLASS_GENDER_AVATARS[pendingClassId];
-        if (avatarMap) {
-            player.data = { ...player.data, avatar: avatarMap[gender] };
-            setAvatarDisplay('hub-avatar', player.data.avatar);
+        console.log(`selectGenderAndStart: gender=${gender}, classId=${pendingClassId}, isNewGame=${isNewGame}`);
+
+        if (!isNewGame && classSave) {
+            // Load existing class-specific save, preserve globalProgression
+            const data = JSON.parse(classSave);
+            player = data.pState;
+            player.classId = pendingClassId;
+            player.data = CLASSES[player.classId];
+            globalProgression.gender = gender;
+            let avatarMap = CLASS_GENDER_AVATARS[pendingClassId];
+            if (avatarMap) {
+                player.data = { ...player.data, avatar: avatarMap[gender] };
+                setAvatarDisplay('hub-avatar', player.data.avatar);
+            }
+        } else if (!isNewGame) {
+            // Switching to a new class with no prior save: init player, keep globalProgression
+            globalProgression.gender = gender;
+            globalProgression.attributes = getClassBaseAttributes(pendingClassId);
+            player = createFreshPlayer(pendingClassId);
+            let avatarMap = CLASS_GENDER_AVATARS[pendingClassId];
+            if (avatarMap) {
+                player.data = { ...player.data, avatar: avatarMap[gender] };
+            }
+            player.maxHp = calculateMaxHp();
+            player.currentHp = player.maxHp;
+        } else {
+            // Explicit new game: full reset
+            startGame(pendingClassId);
+            globalProgression.gender = gender;
+            let avatarMap = CLASS_GENDER_AVATARS[pendingClassId];
+            if (avatarMap) {
+                player.data = { ...player.data, avatar: avatarMap[gender] };
+                setAvatarDisplay('hub-avatar', player.data.avatar);
+            }
+            saveGame();
+            showHub();
+            return;
         }
         saveGame();
         showHub();
-        return;
+    } catch (err) {
+        console.error('selectGenderAndStart: failed to start game:', err);
     }
-    saveGame();
-    showHub();
 }
 
 function toggleGender() {
