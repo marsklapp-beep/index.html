@@ -1331,5 +1331,6 @@ window.closeConfirmNewGame = closeConfirmNewGame;
 window.confirmNewGameYes = confirmNewGameYes;
 window.loadGameAndContinue = loadGameAndContinue;
 window.selectGenderAndStart = selectGenderAndStart;
+window.showGenderSelect = showGenderSelect;
 console.log("Game.js loaded successfully");
 
