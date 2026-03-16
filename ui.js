@@ -130,7 +130,7 @@ function showSkillGuide() {
 const WILLPOWER_CAP = 50;
 
 const ENHANCEMENT_RARITIES = ['normal', 'rare', 'epic', 'legendary'];
-const ENHANCEMENT_RARITY_COLORS = { normal: 'text-gray-300', rare: 'text-blue-400', epic: 'text-purple-400', legendary: 'text-yellow-400' };
+const ENHANCEMENT_RARITY_COLORS = { normal: 'text-white', rare: 'text-blue-500', epic: 'text-purple-500', legendary: 'text-orange-500' };
 const ENHANCEMENT_RARITY_BORDERS = { normal: 'border-gray-600', rare: 'border-blue-500', epic: 'border-purple-500', legendary: 'border-yellow-500' };
 
 const ENHANCEMENT_DEFS = {
@@ -597,7 +597,7 @@ function renderTreeNodeContent(btn, path, i, isUnlocked, isNext, skillIcon, skil
             btn.classList.add('h-20');
             let rerollHint = canReroll ? '<br><span class="text-[9px] text-yellow-400">🎲 Reroll 20G</span>' : '';
             btn.innerHTML = `<span class="text-base leading-none">${def.icon}</span><br>`
-                + `<span class="${rarityColor} leading-none">${def.name}</span><br>`
+                + `<span class="${rarityColor} text-xs font-bold leading-none">${def.name}</span><br>`
                 + `<span class="text-[9px] uppercase opacity-75">${enh.rarity}</span>${rerollHint}`;
             btn.disabled = !canReroll;
             if (canReroll) btn.onclick = () => rerollEnhancement(path, i);
@@ -615,7 +615,7 @@ function renderTreeNodeContent(btn, path, i, isUnlocked, isNext, skillIcon, skil
             btn.classList.add('h-20');
             let rerollHint = canReroll ? '<br><span class="text-[9px] text-yellow-400">🎲 Reroll 20G</span>' : '';
             btn.innerHTML = `<span class="text-base leading-none">${def.icon}</span><br>`
-                + `<span class="${rarityColor} leading-none">${def.name}</span><br>`
+                + `<span class="${rarityColor} text-xs font-bold leading-none">${def.name}</span><br>`
                 + `<span class="text-[9px] uppercase opacity-75">${newEnh.rarity}</span>${rerollHint}`;
             btn.disabled = !canReroll;
             if (canReroll) btn.onclick = () => rerollEnhancement(path, i);
@@ -1212,7 +1212,16 @@ function useWayOfHeavens() {
     isPlayerTurn = false;
     saveGame();
     updateCombatUI(); renderSkills();
-    setTimeout(() => executeEnemyTurns(0), 800);
+    if (currentMode === 'training') {
+        if(!player.skillCooldowns) player.skillCooldowns = {};
+        Object.keys(player.skillCooldowns).forEach(k => player.skillCooldowns[k] = 0);
+        player.wayOfHeavensCooldown = 0;
+        enemies.forEach(e => { e.currentHp = e.maxHp; });
+        updateCombatUI(); renderSkills();
+        setTimeout(() => startPlayerTurn(), 500);
+    } else {
+        setTimeout(() => executeEnemyTurns(0), 800);
+    }
 }
 
 // --- ENCHANTER ---
@@ -1751,7 +1760,7 @@ function showWeaponSmith() {
     weapons.forEach(({ item, source, label }) => {
         let enhLvl = item.weaponEnhance || 0;
         let isMaxed = enhLvl >= 100;
-        let enhBonus = enhLvl > 0 ? 30 + (enhLvl - 1) * 10 : 0; // 30 at lvl1, +10 per level
+        let enhBonus = enhLvl > 0 ? 5 * enhLvl * (5 + enhLvl) : 0; // cumulative: 30 at lv1, 70 at lv2, 120 at lv3...
         let enhLabel = enhLvl > 0 ? `+${enhBonus} dmg` : 'Not Enhanced';
         let maxBonus = isMaxed ? ' (+5% dmg bonus!)' : '';
         let canEnhance = !isMaxed && (p.inventory.titan_shard || 0) >= 1 && p.gold >= 50;
@@ -1774,7 +1783,7 @@ function showWeaponSmith() {
                     🔨 Enhance<br><span class="text-yellow-300">50💰 + 1🔱</span>
                 </button>
             </div>
-            <div class="text-[10px] text-gray-400">Next level: +${enhLvl === 0 ? 30 : 10} dmg (${isMaxed ? 'MAX' : '40% fail rate'})</div>
+            <div class="text-[10px] text-gray-400">Next level: +${30 + enhLvl * 10} dmg (${isMaxed ? 'MAX' : '40% fail rate'})</div>
         `;
         list.appendChild(div);
     });
@@ -1807,14 +1816,18 @@ function enhanceWeapon(itemId) {
 
     // 40% failure rate
     if(Math.random() < 0.40) {
+        log.className = 'anim-enhance-fail';
+        void log.offsetWidth; // force reflow to restart animation
         log.innerText = '💥 Enhancement failed! Resources consumed.';
         playSound('lose');
     } else {
         let newLvl = enhLvl + 1;
         item.weaponEnhance = newLvl;
-        // Apply bonus damage: at level 1: +30, at level N: 30 + (N-1)*10
-        let dmgAdd = newLvl === 1 ? 30 : 10; // adds 30 first time, 10 each subsequent time
+        // Apply bonus damage: level N adds (30 + (N-1)*10) damage
+        let dmgAdd = 30 + enhLvl * 10; // +30 at lv1, +40 at lv2, +50 at lv3, etc.
         item.stats.dmg = (item.stats.dmg || 0) + dmgAdd;
+        log.className = 'anim-enhance-success';
+        void log.offsetWidth; // force reflow to restart animation
         if(newLvl === 100) {
             item.weaponEnhanceMaxBonus = true; // flag for +5% dmg
             log.innerText = `⭐ MAX ENHANCE reached! +5% damage bonus granted!`;
@@ -1902,6 +1915,13 @@ function startPetBattle(playerPetId) {
     updatePetBattleUI();
     updatePetBattleRecords();
     document.getElementById('pb-result-text').innerText = 'Choose your action!';
+    // Enable all action buttons
+    ['attack', 'block', 'counter'].forEach(action => {
+        let btn = document.getElementById(`pb-btn-${action}`);
+        if(btn) { btn.disabled = false; btn.classList.remove('opacity-50'); }
+    });
+    document.getElementById('pb-cooldown-info').innerText = '';
+    if(petBattleAutoMode) schedulePetAutoAction();
 }
 
 function updatePetBattleUI() {
@@ -2014,6 +2034,9 @@ function petBattleAction(playerAction) {
         } else if(petBattlePlayerHp <= 0) {
             // Player loses
             setTimeout(() => { petBattleLose(); }, 1200);
+        } else {
+            // Round continues — schedule next auto action if auto mode is on
+            if(petBattleAutoMode) schedulePetAutoAction();
         }
         } catch(err) {
             console.error('Pet battle action error:', err);
@@ -2073,8 +2096,13 @@ function petBattleRoundEnd(playerWon) {
             document.getElementById('pb-enemy-name').innerText = petBattleEnemyPet.name;
             updatePetBattleUI();
             updatePetBattleRecords();
-            document.getElementById('pb-result-text').innerText = '⚡ START — New enemy appeared!';
-            showPetBattleStart();
+            document.getElementById('pb-result-text').innerText = '✨ New enemy appeared! Choose your action.';
+            // Re-enable action buttons now that a new pet is generated
+            ['attack', 'block', 'counter'].forEach(action => {
+                let btn = document.getElementById(`pb-btn-${action}`);
+                if(btn) { btn.disabled = false; btn.classList.remove('opacity-50'); }
+            });
+            if(petBattleAutoMode) schedulePetAutoAction();
         }, 2000);
     } else {
         // Draw
@@ -2085,14 +2113,23 @@ function petBattleRoundEnd(playerWon) {
             petBattleLastAction = null;
             petBattleEnemyLastAction = null;
             updatePetBattleUI();
-            document.getElementById('pb-result-text').innerText = '⚡ START — Round reset!';
-            showPetBattleStart();
+            document.getElementById('pb-result-text').innerText = '✨ Round reset! Choose your action.';
+            // Re-enable action buttons
+            ['attack', 'block', 'counter'].forEach(action => {
+                let btn = document.getElementById(`pb-btn-${action}`);
+                if(btn) { btn.disabled = false; btn.classList.remove('opacity-50'); }
+            });
+            if(petBattleAutoMode) schedulePetAutoAction();
         }, 2000);
     }
 }
 
 function petBattleLose() {
     petBattleActive = false;
+    petBattleAutoMode = false;
+    if(petBattleAutoTimer) { clearTimeout(petBattleAutoTimer); petBattleAutoTimer = null; }
+    let autoBtn = document.getElementById('pb-btn-auto');
+    if(autoBtn) { autoBtn.classList.remove('auto-on'); autoBtn.innerText = '🤖 Auto'; }
     globalProgression.petBattleWinStreak = 0;
     // Record loss for player pet, win for enemy pet
     if(!globalProgression.petWinLoss) globalProgression.petWinLoss = {};
@@ -2111,7 +2148,7 @@ function petBattleLose() {
     showPetBattleDefeat();
     saveGame();
     document.getElementById('pb-result-text').innerText = '💀 You lost! Your pet was defeated.';
-    // Disable action buttons
+    // Disable action buttons until a new pet battle is started
     ['attack', 'block', 'counter'].forEach(action => {
         let btn = document.getElementById(`pb-btn-${action}`);
         if(btn) btn.disabled = true;
@@ -2160,7 +2197,33 @@ function showPetBattleStart() {
     }, 1800);
 }
 
-function showRoundResultFlash(playerDmg, enemyDmg) {
+function togglePetBattleAuto() {
+    petBattleAutoMode = !petBattleAutoMode;
+    let btn = document.getElementById('pb-btn-auto');
+    if(petBattleAutoMode) {
+        if(btn) { btn.classList.add('auto-on'); btn.innerText = '⏹ Stop Auto'; }
+        if(petBattleActive) schedulePetAutoAction();
+    } else {
+        if(btn) { btn.classList.remove('auto-on'); btn.innerText = '🤖 Auto'; }
+        if(petBattleAutoTimer) { clearTimeout(petBattleAutoTimer); petBattleAutoTimer = null; }
+    }
+}
+
+function schedulePetAutoAction() {
+    if(!petBattleAutoMode || !petBattleActive) return;
+    petBattleAutoTimer = setTimeout(() => {
+        if(!petBattleAutoMode || !petBattleActive) return;
+        // Check if buttons are usable
+        let attackBtn = document.getElementById('pb-btn-attack');
+        if(attackBtn && attackBtn.disabled) { schedulePetAutoAction(); return; }
+        let actions = ['attack', 'block', 'counter'];
+        let available = actions.filter(a => !(a !== 'attack' && a === petBattleLastAction));
+        let action = available[Math.floor(Math.random() * available.length)];
+        petBattleAction(action);
+    }, 1200);
+}
+
+
     let el = document.createElement('div');
     el.className = 'round-result-flash';
     if (enemyDmg > playerDmg) {
@@ -2195,6 +2258,10 @@ function showPetParticle(action) {
 
 function leavePetBattle() {
     petBattleActive = false;
+    petBattleAutoMode = false;
+    if(petBattleAutoTimer) { clearTimeout(petBattleAutoTimer); petBattleAutoTimer = null; }
+    let autoBtn = document.getElementById('pb-btn-auto');
+    if(autoBtn) { autoBtn.classList.remove('auto-on'); autoBtn.innerText = '🤖 Auto'; }
     showPortal();
 }
 
@@ -2460,6 +2527,7 @@ function showGraveyard() {
     const list = document.getElementById('graveyard-list'); list.innerHTML = '';
     
     let bosses = Object.values(globalProgression.killedBosses || {});
+    const today = new Date().toDateString();
     
     if(bosses.length === 0) {
         list.innerHTML = `<div class="text-center text-gray-500 py-6 bg-gray-900 rounded-xl">No bosses have been defeated yet.</div>`;
@@ -2468,16 +2536,19 @@ function showGraveyard() {
             let btn = document.createElement('div');
             btn.className = `bg-gray-800 border-2 border-gray-700 p-4 rounded-xl flex justify-between items-center shadow-md mb-2`;
             let canFight = globalProgression.gold >= 20;
+            let revivedToday = (globalProgression.graveyardRevivalDates || {})[b.name] === today;
+            let canRevive = canFight && !revivedToday;
+            let statusText = revivedToday ? '<span class="text-xs text-gray-500 ml-1">(Revived today)</span>' : '';
             
             btn.innerHTML = `
                 <div class="flex items-center gap-3">
                     <span class="text-4xl filter grayscale drop-shadow-lg">${b.avatar}</span>
                     <div>
                         <div class="font-bold text-gray-300">${b.name}</div>
-                        <div class="text-xs text-gray-500">Defeated Boss</div>
+                        <div class="text-xs text-gray-500">Defeated Boss${statusText}</div>
                     </div>
                 </div>
-                <button onclick="fightGraveyardBoss('${b.name}')" class="bg-indigo-900 hover:bg-indigo-800 text-indigo-200 px-4 py-2 rounded font-bold transition active:scale-95 border border-indigo-700 shadow flex items-center gap-1 ${canFight ? '' : 'opacity-50 cursor-not-allowed'}" ${canFight ? '' : 'disabled'}>
+                <button onclick="fightGraveyardBoss('${b.name}')" class="bg-indigo-900 hover:bg-indigo-800 text-indigo-200 px-4 py-2 rounded font-bold transition active:scale-95 border border-indigo-700 shadow flex items-center gap-1 ${canRevive ? '' : 'opacity-50 cursor-not-allowed'}" ${canRevive ? '' : 'disabled'}>
                     <span>Resurrect</span><span class="text-yellow-400 text-xs">💰20</span>
                 </button>
             `;
@@ -2488,8 +2559,15 @@ function showGraveyard() {
 }
 
 function fightGraveyardBoss(bossName) {
+    const today = new Date().toDateString();
+    if(!globalProgression.graveyardRevivalDates) globalProgression.graveyardRevivalDates = {};
+    if(globalProgression.graveyardRevivalDates[bossName] === today) {
+        playSound('lose');
+        return; // Already revived today
+    }
     if(globalProgression.gold >= 20) {
         globalProgression.gold -= 20;
+        globalProgression.graveyardRevivalDates[bossName] = today;
         playSound('click');
         currentMode = 'graveyard';
         activeGraveyardBoss = bossName;
@@ -2501,6 +2579,16 @@ function fightGraveyardBoss(bossName) {
 
 function startBattleMode(mode) {
     if(consumeEnergy(1)){ currentMode = mode; startBattle(true); } 
+}
+
+// --- TRAINING GROUND ---
+function showTrainingGround() {
+    switchScreen('screen-training-ground');
+}
+
+function startTraining() {
+    currentMode = 'training';
+    startBattle(true);
 }
 
 // --- ENEMY SKILLS ---
@@ -2542,6 +2630,7 @@ function assignEnemySkills(enemy) {
 
 // --- COMBAT & ANIMATIONS ---
 function toggleAuto() { 
+    if(currentMode === 'training') return; // No auto in training ground
     isAutoBattle = !isAutoBattle; 
     const btn = document.getElementById('btn-auto'); 
     if(isAutoBattle) btn.classList.add('auto-on');
@@ -2552,7 +2641,7 @@ function returnToTown() {
     combatActive = false;
     isAutoBattle = false;
     const btn = document.getElementById('btn-auto');
-    if(btn) btn.classList.remove('auto-on');
+    if(btn) { btn.classList.remove('auto-on'); btn.disabled = false; btn.classList.remove('opacity-50'); }
     showHub();
 }
 function fleeBattle() { returnToTown(); }
@@ -2564,6 +2653,14 @@ function generateEnemies() {
     if (currentMode === 'quest') { 
         for(let i=0; i<4; i++) { let e = { shield: 0, healBlock: 0, defReduction: 0, bleedStacks: 0, bleedTurns: 0, burnStacks: 0, burnTurns: 0, poisonStacks: 0, poisonTurns: 0, skipChance: 0, skipTurns: 0, dmgTakenMult: 1, dmgTakenTurns: 0, dodgeTurns: 0, rarity: 'common', lvl: 1, name: 'Weak Target', avatar: '🎯', maxHp: 1, baseDmg: 0, currentHp: 1 }; assignEnemySkills(e); enemies.push(e); } 
         activeTargetIndex = 0; return; 
+    }
+
+    if (currentMode === 'training') {
+        let e = { shield: 0, healBlock: 0, defReduction: 0, bleedStacks: 0, bleedTurns: 0, burnStacks: 0, burnTurns: 0, poisonStacks: 0, poisonTurns: 0, skipChance: 0, skipTurns: 0, dmgTakenMult: 1, dmgTakenTurns: 0, dodgeTurns: 0, rarity: 'common', isBoss: false, lvl: 1, name: 'Training Dummy', avatar: '🎯', maxHp: 9999999, baseDmg: 0, skills: [] };
+        e.currentHp = e.maxHp;
+        enemies.push(e);
+        activeTargetIndex = 0;
+        return;
     }
 
     if (currentMode === 'graveyard') {
@@ -2732,7 +2829,15 @@ function startBattle(isNewEncounter = false) {
     player.silencedSlots = {};
     combatLog = [`Encountered ${enemies.length} enemies!`, "Fight!"]; isPlayerTurn = true;
     updateCombatUI(); renderSkills(); renderUsableSlots(); switchScreen('screen-combat');
-    if(isAutoBattle) setTimeout(processAutoTurn, 500);
+    // Handle training mode: disable AUTO button
+    const autoBtn = document.getElementById('btn-auto');
+    if(currentMode === 'training') {
+        isAutoBattle = false;
+        if(autoBtn) { autoBtn.disabled = true; autoBtn.classList.add('opacity-50'); autoBtn.classList.remove('auto-on'); }
+    } else {
+        if(autoBtn) { autoBtn.disabled = false; autoBtn.classList.remove('opacity-50'); }
+        if(isAutoBattle) setTimeout(processAutoTurn, 500);
+    }
 }
 
 function selectTarget(index) { 
@@ -2990,7 +3095,7 @@ function useConsumable(key) {
 
 function updateCombatUI() {
     document.getElementById('ui-level').innerText = `Level ${player.lvl}`;
-    let modeText = currentMode === 'dungeon' ? `Tier ${activeDungeonTier} (Rm ${activeDungeonRoom})` : currentMode === 'hunting' ? 'Wilderness' : currentMode === 'pillage' ? 'Pillage Village' : currentMode === 'workshop' ? 'Workshop Raid' : currentMode === 'graveyard' ? 'Graveyard' : 'Quest Marathon';
+    let modeText = currentMode === 'training' ? '🎯 Training Ground' : currentMode === 'dungeon' ? `Tier ${activeDungeonTier} (Rm ${activeDungeonRoom})` : currentMode === 'hunting' ? 'Wilderness' : currentMode === 'pillage' ? 'Pillage Village' : currentMode === 'workshop' ? 'Workshop Raid' : currentMode === 'graveyard' ? 'Graveyard' : 'Quest Marathon';
     
     if(currentMode === 'hunting' || currentMode === 'pillage' || currentMode === 'workshop') {
         modeText += ` (${globalProgression.storyModeProgress[currentMode] + 1}/10)`;
@@ -3585,8 +3690,17 @@ function usePlayerSkill(slotIndex) {
 
     updateCombatUI(); renderSkills();
     
-    let enemyDelay = currentMode === 'quest' ? 200 : 800;
-    if (enemies.every(e => e.currentHp <= 0)) setTimeout(() => { if(combatActive) endBattle(true); }, 1000); else setTimeout(() => executeEnemyTurns(0), enemyDelay);
+    if (currentMode === 'training') {
+        // In training mode: skip enemy turn, reset cooldowns, restore dummy HP
+        if(!player.skillCooldowns) player.skillCooldowns = {};
+        Object.keys(player.skillCooldowns).forEach(k => player.skillCooldowns[k] = 0);
+        enemies.forEach(e => { e.currentHp = e.maxHp; });
+        updateCombatUI(); renderSkills();
+        setTimeout(() => startPlayerTurn(), 500);
+    } else {
+        let enemyDelay = currentMode === 'quest' ? 200 : 800;
+        if (enemies.every(e => e.currentHp <= 0)) setTimeout(() => { if(combatActive) endBattle(true); }, 1000); else setTimeout(() => executeEnemyTurns(0), enemyDelay);
+    }
 }
 
 function executeEnemyTurns(enemyIdx, extraTurns = 0) {
@@ -3596,9 +3710,10 @@ function executeEnemyTurns(enemyIdx, extraTurns = 0) {
 
     let e = enemies[enemyIdx]; if(e.currentHp <= 0) { executeEnemyTurns(enemyIdx + 1); return; }
 
-    if(currentMode === 'quest') {
-        addLog(`${e.name} stares blankly...`, "text-gray-500");
-        updateCombatUI(); setTimeout(() => executeEnemyTurns(enemyIdx + 1), 200);
+    if(currentMode === 'quest' || currentMode === 'training') {
+        if(currentMode === 'training') { e.currentHp = e.maxHp; }
+        else { addLog(`${e.name} stares blankly...`, "text-gray-500"); }
+        updateCombatUI(); setTimeout(() => executeEnemyTurns(enemyIdx + 1), currentMode === 'training' ? 50 : 200);
         return;
     }
 
@@ -3977,7 +4092,7 @@ function startPlayerTurn() {
     player.usedConsumableThisTurn = false;
     isPlayerTurn = true; renderSkills(); renderUsableSlots();
     let autoDelay = 800; 
-    if(isAutoBattle) setTimeout(processAutoTurn, autoDelay);
+    if(isAutoBattle && currentMode !== 'training') setTimeout(processAutoTurn, autoDelay);
 }
 
 // --- BATTLE REWARDS ---
@@ -4317,6 +4432,12 @@ function endBattle(playerWon) {
         rwdCont.classList.add('hidden');
     }
     switchScreen('screen-end');
+    // Auto-return to graveyard menu after a graveyard battle
+    if(currentMode === 'graveyard') {
+        let gravBtn = document.getElementById('btn-end-hub');
+        if(gravBtn) { gravBtn.innerText = '⚰️ Return to Graveyard'; gravBtn.onclick = showGraveyard; }
+        setTimeout(() => showGraveyard(), 3500);
+    }
 }
 
 function handleEndNext() { 
