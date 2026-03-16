@@ -334,7 +334,8 @@ let player = {
 };
 
 let enemies = []; let activeTargetIndex = 0; let currentMode = 'none'; 
-let activeDungeonTier = 1; let activeDungeonRoom = 1; 
+let activeDungeonTier = 1; let activeDungeonRoom = 1;
+let autoContinueTimeoutId = null; 
 let isPlayerTurn = true; let combatLog = []; let isAutoBattle = false; let combatActive = false; 
 let activeGraveyardBoss = null;
 // Invasion state
@@ -686,9 +687,9 @@ function getBaseDamage() {
     let equipStats = getEquipStats();
     let a = globalProgression.attributes;
     let baseDmg = player.data.baseDmg + (a.willpower * 4) + (a.agility * 2) + (a.reflexes * 1) + player.treeBonusDmg + equipStats.dmg + getEquipBonusStat('bonusAtk');
-    // Apply weapon enhance max bonus (+5% at level 100)
+    // Apply weapon enhance max bonus (+10% at level 100)
     let weapon = globalProgression.equipped ? globalProgression.equipped['weapon'] : null;
-    if(weapon && weapon.weaponEnhanceMaxBonus) baseDmg = Math.floor(baseDmg * 1.05);
+    if(weapon && weapon.weaponEnhanceMaxBonus) baseDmg = Math.floor(baseDmg * 1.10);
     return baseDmg;
 }
 
