@@ -353,8 +353,13 @@ let petBattlePlayerPet = null; let petBattleEnemyPet = null; let petBattleActive
 let petBattlePlayerHp = 10; let petBattleEnemyHp = 10; let petBattleLastAction = null; let petBattleEnemyLastAction = null;
 
 // --- ENERGY SYSTEM ---
+function getMaxEnergy() {
+    let baseCap = globalProgression.energyCapUnlocked ? 100 : 50;
+    return Math.min(baseCap, 10 + (player.lvl - 1));
+}
+
 function updateEnergy() {
-    let maxEnergy = Math.min(50, 10 + (player.lvl - 1));
+    let maxEnergy = getMaxEnergy();
     let now = Date.now(); let msPassed = now - globalProgression.lastEnergyTime; let minutesPassed = Math.floor(msPassed / 60000);
     if (globalProgression.energy < maxEnergy) {
         if (minutesPassed > 0) { globalProgression.energy = Math.min(maxEnergy, globalProgression.energy + minutesPassed); globalProgression.lastEnergyTime = now - (msPassed % 60000); saveGame(); }
@@ -364,6 +369,10 @@ function updateEnergy() {
     const eMxEl = document.getElementById('hub-energy-max'); if(eMxEl) eMxEl.innerText = maxEnergy;
     const eBar = document.getElementById('hub-energy-bar'); if(eBar) eBar.style.width = (maxEnergy > 0 ? Math.round((globalProgression.energy / maxEnergy) * 100) : 0) + '%';
     const seEl = document.getElementById('story-energy'); if(seEl) seEl.innerText = globalProgression.energy;
+
+    // Show/hide energy cap upgrade indicator in well button
+    const wellNoti = document.getElementById('hub-well-energy-noti');
+    if(wellNoti) wellNoti.style.display = (!globalProgression.energyCapUnlocked && getMaxEnergy() >= 50 && (globalProgression.gold >= 300)) ? 'inline' : 'none';
 
     ['herbs', 'mine', 'fish', 'enchants'].forEach(type => {
         let el = document.getElementById(`timer-${type}`);
@@ -407,7 +416,7 @@ function updateHp() {
 setInterval(updateHp, 1000);
 
 function consumeEnergy(amount) {
-    if(globalProgression.energy >= amount) { globalProgression.energy -= amount; let maxEnergy = Math.min(50, 10 + (player.lvl - 1)); if(globalProgression.energy === maxEnergy - amount) globalProgression.lastEnergyTime = Date.now(); saveGame(); updateEnergy(); return true; }
+    if(globalProgression.energy >= amount) { globalProgression.energy -= amount; let maxEnergy = getMaxEnergy(); if(globalProgression.energy === maxEnergy - amount) globalProgression.lastEnergyTime = Date.now(); saveGame(); updateEnergy(); return true; }
     return false;
 }
 
@@ -673,7 +682,11 @@ function calculateMaxHp() {
 function getBaseDamage() {
     let equipStats = getEquipStats();
     let a = globalProgression.attributes;
-    return player.data.baseDmg + (a.willpower * 4) + (a.agility * 2) + (a.reflexes * 1) + player.treeBonusDmg + equipStats.dmg + getEquipBonusStat('bonusAtk');
+    let baseDmg = player.data.baseDmg + (a.willpower * 4) + (a.agility * 2) + (a.reflexes * 1) + player.treeBonusDmg + equipStats.dmg + getEquipBonusStat('bonusAtk');
+    // Apply weapon enhance max bonus (+5% at level 100)
+    let weapon = globalProgression.equipped ? globalProgression.equipped['weapon'] : null;
+    if(weapon && weapon.weaponEnhanceMaxBonus) baseDmg = Math.floor(baseDmg * 1.05);
+    return baseDmg;
 }
 
 function getPlayerDef() {
@@ -1287,6 +1300,7 @@ function gambleGold(amount) {
 }
 
 function checkLevelUp() {
+    if(player.lvl >= 500) return; // Level cap at 500
     let xpNeeded = getXpForNextLevel(player.lvl);
     if(player.xp >= xpNeeded) {
         player.lvl++; player.xp -= xpNeeded; player.statPoints += 5; // 5 pts per level
@@ -1294,7 +1308,7 @@ function checkLevelUp() {
         player.maxHp = calculateMaxHp(); player.currentHp = player.maxHp;
         playSound('win');
         document.getElementById('hub-level-up-noti').classList.remove('hidden');
-        checkLevelUp(); // Recursion in case of massive XP gain
+        if(player.lvl < 500) checkLevelUp(); // Recursion in case of massive XP gain
     }
 }
 
