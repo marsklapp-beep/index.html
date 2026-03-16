@@ -1326,3 +1326,9 @@ function checkLevelUp() {
     }
 }
 
+window.confirmNewGame = confirmNewGame;
+window.closeConfirmNewGame = closeConfirmNewGame;
+window.confirmNewGameYes = confirmNewGameYes;
+window.loadGameAndContinue = loadGameAndContinue;
+console.log("Game.js loaded successfully");
+
