@@ -240,9 +240,9 @@ function showAttributes() {
                     <button onclick="deallocateAttribute('${a.id}',1)" class="w-full bg-red-800 hover:bg-red-700 py-1 rounded text-white font-bold transition active:scale-95 border border-red-600 text-sm disabled:opacity-50" ${minusDisabled}>-</button>
                 </div>
                 <div class="flex flex-col gap-1 flex-1">
-                    <button onclick="allocateAttribute('${a.id}',100)" class="w-full bg-gray-700 hover:bg-gray-600 py-1 rounded text-white font-bold transition active:scale-95 border border-gray-500 text-xs disabled:opacity-50" ${plus100Disabled}>+ 100</button>
-                    <button onclick="allocateAttribute('${a.id}',5)" class="w-full bg-gray-700 hover:bg-gray-600 py-1 rounded text-white font-bold transition active:scale-95 border border-gray-500 text-xs disabled:opacity-50" ${plus5Disabled}>+ 5</button>
-                    <button onclick="allocateAttribute('${a.id}',1)" class="w-full bg-gray-700 hover:bg-gray-600 py-1 rounded text-white font-bold transition active:scale-95 border border-gray-500 text-sm disabled:opacity-50" ${plusDisabled}>+</button>
+                    <button onclick="allocateAttribute('${a.id}',100)" class="w-full bg-green-700 hover:bg-green-600 py-1 rounded text-white font-bold transition active:scale-95 border border-green-500 text-xs disabled:opacity-50" ${plus100Disabled}>+ 100</button>
+                    <button onclick="allocateAttribute('${a.id}',5)" class="w-full bg-green-700 hover:bg-green-600 py-1 rounded text-white font-bold transition active:scale-95 border border-green-500 text-xs disabled:opacity-50" ${plus5Disabled}>+ 5</button>
+                    <button onclick="allocateAttribute('${a.id}',1)" class="w-full bg-green-700 hover:bg-green-600 py-1 rounded text-white font-bold transition active:scale-95 border border-green-500 text-sm disabled:opacity-50" ${plusDisabled}>+</button>
                 </div>
             </div>
         `;
@@ -643,14 +643,14 @@ function showSkillTree() {
             const container = document.getElementById('warrior-tree-container'); container.innerHTML = '';
             const headerRow = document.getElementById('warrior-tree-header'); headerRow.innerHTML = '';
             
-            // OFFENSE PATH (left column) - red themed, 25 nodes
+            // OFFENSE PATH (left column) - red themed, 12 nodes
             let offenseCol = document.createElement('div'); offenseCol.className = 'w-1/2 flex flex-col gap-2';
             headerRow.innerHTML = '<div class="w-1/2 text-center font-bold text-red-500 border-b border-red-700 pb-1">OFFENSE PATH</div><div class="w-1/2 text-center font-bold text-blue-500 border-b border-blue-700 pb-1">DEFENSE PATH</div>';
-            for(let i=0; i<25; i++) {
+            for(let i=0; i<12; i++) {
                 let isUnlocked = i < (player.treeProgressOffense||0);
                 let isNext = i === (player.treeProgressOffense||0);
-                let isSkillNode = (i===4 || i===9 || i===14);
-                let skillIdx = i===4 ? 3 : i===9 ? 4 : i===14 ? 5 : null;
+                let isSkillNode = (i===2 || i===6 || i===11);
+                let skillIdx = i===2 ? 3 : i===6 ? 4 : i===11 ? 5 : null;
                 
                 let btn = document.createElement('button');
                 btn.className = `p-2 rounded text-[10px] md:text-xs font-bold border-2 transition-all shadow-md ${isUnlocked?'bg-red-900 border-red-500 text-red-200':isNext?'bg-gray-700 border-yellow-400 text-white animate-pulse shadow-[0_0_10px_rgba(250,204,21,0.5)]':'bg-gray-800 border-gray-700 text-gray-500 opacity-60'}`;
@@ -660,13 +660,13 @@ function showSkillTree() {
             }
             container.appendChild(offenseCol);
             
-            // DEFENSE PATH (right column) - blue themed, 25 nodes
+            // DEFENSE PATH (right column) - blue themed, 12 nodes
             let defenseCol = document.createElement('div'); defenseCol.className = 'w-1/2 flex flex-col gap-2';
-            for(let i=0; i<25; i++) {
+            for(let i=0; i<12; i++) {
                 let isUnlocked = i < (player.treeProgressDefense||0);
                 let isNext = i === (player.treeProgressDefense||0);
-                let isSkillNode = (i===4 || i===9 || i===14);
-                let skillIdx = i===4 ? 6 : i===9 ? 7 : i===14 ? 8 : null;
+                let isSkillNode = (i===2 || i===6 || i===11);
+                let skillIdx = i===2 ? 6 : i===6 ? 7 : i===11 ? 8 : null;
                 
                 let btn = document.createElement('button');
                 btn.className = `p-2 rounded text-[10px] md:text-xs font-bold border-2 transition-all shadow-md ${isUnlocked?'bg-blue-900 border-blue-500 text-blue-200':isNext?'bg-gray-700 border-yellow-400 text-white animate-pulse shadow-[0_0_10px_rgba(250,204,21,0.5)]':'bg-gray-800 border-gray-700 text-gray-500 opacity-60'}`;
@@ -686,11 +686,11 @@ function showSkillTree() {
             const mageHeaderRow = document.getElementById('mage-tree-header'); mageHeaderRow.innerHTML = '<div class="w-1/2 text-center font-bold text-orange-500 border-b border-orange-700 pb-1">FIRE PATH</div><div class="w-1/2 text-center font-bold text-cyan-500 border-b border-cyan-700 pb-1">ICE PATH</div>';
             
             let fireCol = document.createElement('div'); fireCol.className = 'w-1/2 flex flex-col gap-2';
-            for(let i=0; i<25; i++) {
+            for(let i=0; i<12; i++) {
                 let isUnlocked = i < (player.treeProgressFire||0);
                 let isNext = i === (player.treeProgressFire||0);
-                let isSkillNode = (i===4 || i===9 || i===14);
-                let skillIdx = i===4 ? 3 : i===9 ? 4 : i===14 ? 5 : null;
+                let isSkillNode = (i===2 || i===6 || i===11);
+                let skillIdx = i===2 ? 3 : i===6 ? 4 : i===11 ? 5 : null;
                 
                 let btn = document.createElement('button');
                 btn.className = `p-2 rounded text-[10px] md:text-xs font-bold border-2 transition-all shadow-md ${isUnlocked?'bg-orange-900 border-orange-500 text-orange-200':isNext?'bg-gray-700 border-yellow-400 text-white animate-pulse shadow-[0_0_10px_rgba(250,204,21,0.5)]':'bg-gray-800 border-gray-700 text-gray-500 opacity-60'}`;
@@ -701,11 +701,11 @@ function showSkillTree() {
             container.appendChild(fireCol);
             
             let iceCol = document.createElement('div'); iceCol.className = 'w-1/2 flex flex-col gap-2';
-            for(let i=0; i<25; i++) {
+            for(let i=0; i<12; i++) {
                 let isUnlocked = i < (player.treeProgressIce||0);
                 let isNext = i === (player.treeProgressIce||0);
-                let isSkillNode = (i===4 || i===9 || i===14);
-                let skillIdx = i===4 ? 6 : i===9 ? 7 : i===14 ? 8 : null;
+                let isSkillNode = (i===2 || i===6 || i===11);
+                let skillIdx = i===2 ? 6 : i===6 ? 7 : i===11 ? 8 : null;
                 
                 let btn = document.createElement('button');
                 btn.className = `p-2 rounded text-[10px] md:text-xs font-bold border-2 transition-all shadow-md ${isUnlocked?'bg-cyan-900 border-cyan-500 text-cyan-200':isNext?'bg-gray-700 border-yellow-400 text-white animate-pulse shadow-[0_0_10px_rgba(250,204,21,0.5)]':'bg-gray-800 border-gray-700 text-gray-500 opacity-60'}`;
@@ -725,11 +725,11 @@ function showSkillTree() {
             const paladinHeaderRow = document.getElementById('paladin-tree-header'); paladinHeaderRow.innerHTML = '<div class="w-1/2 text-center font-bold text-yellow-500 border-b border-yellow-700 pb-1">HOLY PATH</div><div class="w-1/2 text-center font-bold text-emerald-500 border-b border-emerald-700 pb-1">GUARDIAN PATH</div>';
             // Holy Path (left) — gold/yellow themed
             let holyCol = document.createElement('div'); holyCol.className = 'w-1/2 flex flex-col gap-2';
-            for(let i=0; i<25; i++) {
+            for(let i=0; i<12; i++) {
                 let isUnlocked = i < (player.treeProgressHoly||0);
                 let isNext = i === (player.treeProgressHoly||0);
-                let isSkillNode = (i===4 || i===9 || i===14);
-                let skillIdx = i===4 ? 3 : i===9 ? 4 : i===14 ? 5 : null;
+                let isSkillNode = (i===2 || i===6 || i===11);
+                let skillIdx = i===2 ? 3 : i===6 ? 4 : i===11 ? 5 : null;
                 let btn = document.createElement('button');
                 btn.className = `p-2 rounded text-[10px] md:text-xs font-bold border-2 transition-all shadow-md ${isUnlocked?'bg-yellow-900 border-yellow-500 text-yellow-200':isNext?'bg-gray-700 border-yellow-400 text-white animate-pulse shadow-[0_0_10px_rgba(250,204,21,0.5)]':'bg-gray-800 border-gray-700 text-gray-500 opacity-60'}`;
                 renderTreeNodeContent(btn, 'holy', i, isUnlocked, isNext, '✨', skillIdx);
@@ -738,11 +738,11 @@ function showSkillTree() {
             container.appendChild(holyCol);
             // Guardian Path (right) — emerald themed
             let guardianCol = document.createElement('div'); guardianCol.className = 'w-1/2 flex flex-col gap-2';
-            for(let i=0; i<25; i++) {
+            for(let i=0; i<12; i++) {
                 let isUnlocked = i < (player.treeProgressGuardian||0);
                 let isNext = i === (player.treeProgressGuardian||0);
-                let isSkillNode = (i===4 || i===9 || i===14);
-                let skillIdx = i===4 ? 6 : i===9 ? 7 : i===14 ? 8 : null;
+                let isSkillNode = (i===2 || i===6 || i===11);
+                let skillIdx = i===2 ? 6 : i===6 ? 7 : i===11 ? 8 : null;
                 let btn = document.createElement('button');
                 btn.className = `p-2 rounded text-[10px] md:text-xs font-bold border-2 transition-all shadow-md ${isUnlocked?'bg-emerald-900 border-emerald-500 text-emerald-200':isNext?'bg-gray-700 border-yellow-400 text-white animate-pulse shadow-[0_0_10px_rgba(250,204,21,0.5)]':'bg-gray-800 border-gray-700 text-gray-500 opacity-60'}`;
                 renderTreeNodeContent(btn, 'guardian', i, isUnlocked, isNext, '🛡️', skillIdx);
@@ -760,11 +760,11 @@ function showSkillTree() {
             const ninjaHeaderRow = document.getElementById('ninja-tree-header'); ninjaHeaderRow.innerHTML = '<div class="w-1/2 text-center font-bold text-violet-500 border-b border-violet-700 pb-1">SHADOW PATH</div><div class="w-1/2 text-center font-bold text-lime-500 border-b border-lime-700 pb-1">VENOM PATH</div>';
             // Shadow Path (left) — violet themed
             let shadowCol = document.createElement('div'); shadowCol.className = 'w-1/2 flex flex-col gap-2';
-            for(let i=0; i<25; i++) {
+            for(let i=0; i<12; i++) {
                 let isUnlocked = i < (player.treeProgressShadow||0);
                 let isNext = i === (player.treeProgressShadow||0);
-                let isSkillNode = (i===4 || i===9 || i===14);
-                let skillIdx = i===4 ? 3 : i===9 ? 4 : i===14 ? 5 : null;
+                let isSkillNode = (i===2 || i===6 || i===11);
+                let skillIdx = i===2 ? 3 : i===6 ? 4 : i===11 ? 5 : null;
                 let btn = document.createElement('button');
                 btn.className = `p-2 rounded text-[10px] md:text-xs font-bold border-2 transition-all shadow-md ${isUnlocked?'bg-violet-900 border-violet-500 text-violet-200':isNext?'bg-gray-700 border-yellow-400 text-white animate-pulse shadow-[0_0_10px_rgba(250,204,21,0.5)]':'bg-gray-800 border-gray-700 text-gray-500 opacity-60'}`;
                 renderTreeNodeContent(btn, 'shadow', i, isUnlocked, isNext, '🌑', skillIdx);
@@ -773,11 +773,11 @@ function showSkillTree() {
             container.appendChild(shadowCol);
             // Venom Path (right) — lime themed
             let venomCol = document.createElement('div'); venomCol.className = 'w-1/2 flex flex-col gap-2';
-            for(let i=0; i<25; i++) {
+            for(let i=0; i<12; i++) {
                 let isUnlocked = i < (player.treeProgressVenom||0);
                 let isNext = i === (player.treeProgressVenom||0);
-                let isSkillNode = (i===4 || i===9 || i===14);
-                let skillIdx = i===4 ? 6 : i===9 ? 7 : i===14 ? 8 : null;
+                let isSkillNode = (i===2 || i===6 || i===11);
+                let skillIdx = i===2 ? 6 : i===6 ? 7 : i===11 ? 8 : null;
                 let btn = document.createElement('button');
                 btn.className = `p-2 rounded text-[10px] md:text-xs font-bold border-2 transition-all shadow-md ${isUnlocked?'bg-lime-900 border-lime-500 text-lime-200':isNext?'bg-gray-700 border-yellow-400 text-white animate-pulse shadow-[0_0_10px_rgba(250,204,21,0.5)]':'bg-gray-800 border-gray-700 text-gray-500 opacity-60'}`;
                 renderTreeNodeContent(btn, 'venom', i, isUnlocked, isNext, '🐍', skillIdx);
@@ -795,11 +795,11 @@ function showSkillTree() {
             const clericHeaderRow = document.getElementById('cleric-tree-header'); clericHeaderRow.innerHTML = '<div class="w-1/2 text-center font-bold text-pink-400 border-b border-pink-700 pb-1">DIVINE PATH</div><div class="w-1/2 text-center font-bold text-green-600 border-b border-green-800 pb-1">PLAGUE PATH</div>';
             // Divine Path (left) — pink/green themed
             let divineCol = document.createElement('div'); divineCol.className = 'w-1/2 flex flex-col gap-2';
-            for(let i=0; i<25; i++) {
+            for(let i=0; i<12; i++) {
                 let isUnlocked = i < (player.treeProgressDivine||0);
                 let isNext = i === (player.treeProgressDivine||0);
-                let isSkillNode = (i===4 || i===9 || i===14);
-                let skillIdx = i===4 ? 3 : i===9 ? 4 : i===14 ? 5 : null;
+                let isSkillNode = (i===2 || i===6 || i===11);
+                let skillIdx = i===2 ? 3 : i===6 ? 4 : i===11 ? 5 : null;
                 let btn = document.createElement('button');
                 btn.className = `p-2 rounded text-[10px] md:text-xs font-bold border-2 transition-all shadow-md ${isUnlocked?'bg-pink-900 border-pink-500 text-pink-200':isNext?'bg-gray-700 border-yellow-400 text-white animate-pulse shadow-[0_0_10px_rgba(250,204,21,0.5)]':'bg-gray-800 border-gray-700 text-gray-500 opacity-60'}`;
                 renderTreeNodeContent(btn, 'divine', i, isUnlocked, isNext, '✨', skillIdx);
@@ -808,11 +808,11 @@ function showSkillTree() {
             container.appendChild(divineCol);
             // Plague Path (right) — dark green themed
             let plagueCol = document.createElement('div'); plagueCol.className = 'w-1/2 flex flex-col gap-2';
-            for(let i=0; i<25; i++) {
+            for(let i=0; i<12; i++) {
                 let isUnlocked = i < (player.treeProgressPlague||0);
                 let isNext = i === (player.treeProgressPlague||0);
-                let isSkillNode = (i===4 || i===9 || i===14);
-                let skillIdx = i===4 ? 6 : i===9 ? 7 : i===14 ? 8 : null;
+                let isSkillNode = (i===2 || i===6 || i===11);
+                let skillIdx = i===2 ? 6 : i===6 ? 7 : i===11 ? 8 : null;
                 let btn = document.createElement('button');
                 btn.className = `p-2 rounded text-[10px] md:text-xs font-bold border-2 transition-all shadow-md ${isUnlocked?'bg-green-900 border-green-600 text-green-200':isNext?'bg-gray-700 border-yellow-400 text-white animate-pulse shadow-[0_0_10px_rgba(250,204,21,0.5)]':'bg-gray-800 border-gray-700 text-gray-500 opacity-60'}`;
                 renderTreeNodeContent(btn, 'plague', i, isUnlocked, isNext, '☠️', skillIdx);
@@ -830,11 +830,11 @@ function showSkillTree() {
             const archerHeaderRow = document.getElementById('archer-tree-header'); archerHeaderRow.innerHTML = '<div class="w-1/2 text-center font-bold text-sky-400 border-b border-sky-700 pb-1">PRECISION PATH</div><div class="w-1/2 text-center font-bold text-amber-400 border-b border-amber-700 pb-1">SURVIVAL PATH</div>';
             // Precision Path (left) — sky themed
             let precisionCol = document.createElement('div'); precisionCol.className = 'w-1/2 flex flex-col gap-2';
-            for(let i=0; i<25; i++) {
+            for(let i=0; i<12; i++) {
                 let isUnlocked = i < (player.treeProgressPrecision||0);
                 let isNext = i === (player.treeProgressPrecision||0);
-                let isSkillNode = (i===4 || i===9 || i===14);
-                let skillIdx = i===4 ? 3 : i===9 ? 4 : i===14 ? 5 : null;
+                let isSkillNode = (i===2 || i===6 || i===11);
+                let skillIdx = i===2 ? 3 : i===6 ? 4 : i===11 ? 5 : null;
                 let btn = document.createElement('button');
                 btn.className = `p-2 rounded text-[10px] md:text-xs font-bold border-2 transition-all shadow-md ${isUnlocked?'bg-sky-900 border-sky-500 text-sky-200':isNext?'bg-gray-700 border-yellow-400 text-white animate-pulse shadow-[0_0_10px_rgba(250,204,21,0.5)]':'bg-gray-800 border-gray-700 text-gray-500 opacity-60'}`;
                 renderTreeNodeContent(btn, 'precision', i, isUnlocked, isNext, '🎯', skillIdx);
@@ -843,11 +843,11 @@ function showSkillTree() {
             container.appendChild(precisionCol);
             // Survival Path (right) — amber themed
             let survivalCol = document.createElement('div'); survivalCol.className = 'w-1/2 flex flex-col gap-2';
-            for(let i=0; i<25; i++) {
+            for(let i=0; i<12; i++) {
                 let isUnlocked = i < (player.treeProgressSurvival||0);
                 let isNext = i === (player.treeProgressSurvival||0);
-                let isSkillNode = (i===4 || i===9 || i===14);
-                let skillIdx = i===4 ? 6 : i===9 ? 7 : i===14 ? 8 : null;
+                let isSkillNode = (i===2 || i===6 || i===11);
+                let skillIdx = i===2 ? 6 : i===6 ? 7 : i===11 ? 8 : null;
                 let btn = document.createElement('button');
                 btn.className = `p-2 rounded text-[10px] md:text-xs font-bold border-2 transition-all shadow-md ${isUnlocked?'bg-amber-900 border-amber-500 text-amber-200':isNext?'bg-gray-700 border-yellow-400 text-white animate-pulse shadow-[0_0_10px_rgba(250,204,21,0.5)]':'bg-gray-800 border-gray-700 text-gray-500 opacity-60'}`;
                 renderTreeNodeContent(btn, 'survival', i, isUnlocked, isNext, '🪤', skillIdx);
@@ -1895,6 +1895,7 @@ function startPetBattle(playerPetId) {
     document.getElementById('pb-enemy-emoji').innerText = petBattleEnemyPet.emoji;
     document.getElementById('pb-enemy-name').innerText = petBattleEnemyPet.name;
     updatePetBattleUI();
+    updatePetBattleRecords();
     document.getElementById('pb-result-text').innerText = 'Choose your action!';
 }
 
@@ -1924,6 +1925,16 @@ function updatePetBattleUI() {
             }
         }
     });
+}
+
+function updatePetBattleRecords() {
+    if(!globalProgression.petWinLoss) globalProgression.petWinLoss = {};
+    let playerRec = petBattlePlayerPet ? (globalProgression.petWinLoss[petBattlePlayerPet.id] || {wins:0,losses:0}) : {wins:0,losses:0};
+    let enemyRec = petBattleEnemyPet ? (globalProgression.petWinLoss[petBattleEnemyPet.id] || {wins:0,losses:0}) : {wins:0,losses:0};
+    let playerRecEl = document.getElementById('pb-player-record');
+    let enemyRecEl = document.getElementById('pb-enemy-record');
+    if(playerRecEl) playerRecEl.innerText = `W: ${playerRec.wins} / L: ${playerRec.losses}`;
+    if(enemyRecEl) enemyRecEl.innerText = `W: ${enemyRec.wins} / L: ${enemyRec.losses}`;
 }
 
 function petBattleAction(playerAction) {
@@ -2011,6 +2022,11 @@ function petBattleAction(playerAction) {
 }
 
 function petBattleRoundEnd(playerWon) {
+    // Disable buttons while round ends and new enemy loads
+    ['attack', 'block', 'counter'].forEach(action => {
+        let btn = document.getElementById(`pb-btn-${action}`);
+        if(btn) btn.disabled = true;
+    });
     if(playerWon) {
         globalProgression.gold += 50;
         // Drop a Titan Shard for winning
@@ -2019,6 +2035,16 @@ function petBattleRoundEnd(playerWon) {
         player.xp += xpGain;
         globalProgression.petBattlesWon = (globalProgression.petBattlesWon || 0) + 1;
         globalProgression.petBattleWinStreak = (globalProgression.petBattleWinStreak || 0) + 1;
+        // Record win for player pet, loss for enemy pet
+        if(!globalProgression.petWinLoss) globalProgression.petWinLoss = {};
+        if(petBattlePlayerPet) {
+            if(!globalProgression.petWinLoss[petBattlePlayerPet.id]) globalProgression.petWinLoss[petBattlePlayerPet.id] = {wins:0,losses:0};
+            globalProgression.petWinLoss[petBattlePlayerPet.id].wins++;
+        }
+        if(petBattleEnemyPet) {
+            if(!globalProgression.petWinLoss[petBattleEnemyPet.id]) globalProgression.petWinLoss[petBattleEnemyPet.id] = {wins:0,losses:0};
+            globalProgression.petWinLoss[petBattleEnemyPet.id].losses++;
+        }
         if(globalProgression.petBattleWinStreak > (globalProgression.petBattleBestStreak || 0)) {
             globalProgression.petBattleBestStreak = globalProgression.petBattleWinStreak;
         }
@@ -2041,7 +2067,9 @@ function petBattleRoundEnd(playerWon) {
             document.getElementById('pb-enemy-emoji').innerText = petBattleEnemyPet.emoji;
             document.getElementById('pb-enemy-name').innerText = petBattleEnemyPet.name;
             updatePetBattleUI();
-            document.getElementById('pb-result-text').innerText = 'Next round! Choose your action.';
+            updatePetBattleRecords();
+            document.getElementById('pb-result-text').innerText = '⚡ START — New enemy appeared!';
+            showPetBattleStart();
         }, 2000);
     } else {
         // Draw
@@ -2052,7 +2080,8 @@ function petBattleRoundEnd(playerWon) {
             petBattleLastAction = null;
             petBattleEnemyLastAction = null;
             updatePetBattleUI();
-            document.getElementById('pb-result-text').innerText = 'Round reset! Choose your action.';
+            document.getElementById('pb-result-text').innerText = '⚡ START — Round reset!';
+            showPetBattleStart();
         }, 2000);
     }
 }
@@ -2060,6 +2089,17 @@ function petBattleRoundEnd(playerWon) {
 function petBattleLose() {
     petBattleActive = false;
     globalProgression.petBattleWinStreak = 0;
+    // Record loss for player pet, win for enemy pet
+    if(!globalProgression.petWinLoss) globalProgression.petWinLoss = {};
+    if(petBattlePlayerPet) {
+        if(!globalProgression.petWinLoss[petBattlePlayerPet.id]) globalProgression.petWinLoss[petBattlePlayerPet.id] = {wins:0,losses:0};
+        globalProgression.petWinLoss[petBattlePlayerPet.id].losses++;
+    }
+    if(petBattleEnemyPet) {
+        if(!globalProgression.petWinLoss[petBattleEnemyPet.id]) globalProgression.petWinLoss[petBattleEnemyPet.id] = {wins:0,losses:0};
+        globalProgression.petWinLoss[petBattleEnemyPet.id].wins++;
+    }
+    updatePetBattleRecords();
     let ps = ensureProgressStats();
     ps.battlesLost = (ps.battlesLost || 0) + 1;
     playSound('lose');
@@ -2092,6 +2132,27 @@ function showPetBattleDefeat() {
     let screen = document.getElementById('screen-pet-battle');
     if(screen) screen.classList.add('anim-screen-shake');
     setTimeout(() => { overlay.remove(); if(screen) screen.classList.remove('anim-screen-shake'); }, 2000);
+}
+
+function showPetBattleStart() {
+    let overlay = document.createElement('div');
+    overlay.className = 'fixed inset-0 flex items-center justify-center z-50 pointer-events-none';
+    overlay.innerHTML = '<div class="text-6xl font-black text-green-400 drop-shadow-lg" style="animation: petStartPulse 0.6s ease-in-out 3 alternate;">⚡ START!</div>';
+    document.body.appendChild(overlay);
+    setTimeout(() => {
+        overlay.remove();
+        // Re-enable buttons after START animation
+        ['attack', 'block', 'counter'].forEach(action => {
+            let btn = document.getElementById(`pb-btn-${action}`);
+            if(btn) {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50');
+                let lbl = btn.querySelector('.text-xs');
+                if(lbl) lbl.innerText = action.charAt(0).toUpperCase() + action.slice(1);
+            }
+        });
+        document.getElementById('pb-cooldown-info').innerText = '';
+    }, 1800);
 }
 
 function showRoundResultFlash(playerDmg, enemyDmg) {
@@ -2158,7 +2219,7 @@ function showWell() {
     dropBtn.disabled = !canUseDrop || p.gold < 20;
     energy50Btn.disabled = !canUseEnergy50 || p.gold < 50;
     energy100Btn.disabled = !canUseEnergy100 || p.gold < 100;
-    energyCapBtn.disabled = p.energyCapUnlocked || p.gold < 300;
+    energyCapBtn.disabled = p.energyCapUnlocked || p.gold < 300 || getMaxEnergy() < 50;
 
     document.getElementById('well-log').innerText = '';
     switchScreen('screen-well');
@@ -2229,6 +2290,7 @@ function unlockEnergyCapUpgrade() {
     const p = globalProgression;
     const log = document.getElementById('well-log');
     if(p.energyCapUnlocked) { log.innerText = 'Energy cap already unlocked!'; return; }
+    if(getMaxEnergy() < 50) { log.innerText = 'Reach 50 Energy first! (Requires level 41+)'; playSound('lose'); return; }
     if(p.gold < 300) { log.innerText = 'Not enough Gold! (Need 300)'; playSound('lose'); return; }
     p.gold -= 300;
     p.energyCapUnlocked = true;
@@ -4003,6 +4065,19 @@ function endBattle(playerWon) {
             if(invasionTotalKills >= invasionKillGoal) {
                 globalProgression.inventory.soul_pebbles = (globalProgression.inventory.soul_pebbles || 0) + 1;
                 rwdCont.innerHTML += `<div class="bg-gray-900 px-3 py-2 rounded border-2 border-purple-600 text-purple-300 font-bold shadow-md">🎉 INVASION COMPLETE! +1 Soul Pebble</div>`;
+                // Invasion completion bonuses: 1 legendary gear, 5 legendary cores, 0.5% mythic gear
+                let invasionGear = rollEquipment('legendary');
+                globalProgression.equipInventory.push(invasionGear);
+                globalProgression.newItems[invasionGear.type.startsWith('ring') ? 'ring' : invasionGear.type] = true;
+                rwdCont.innerHTML += `<div class="bg-gray-800 px-3 py-1 rounded border-2 rarity-legendary text-yellow-300 font-bold shadow-md">⚔️ INVASION REWARD: 1 Legendary Gear (${invasionGear.icon})</div>`;
+                globalProgression.inventory.ench_legendary = (globalProgression.inventory.ench_legendary || 0) + 5;
+                rwdCont.innerHTML += `<div class="bg-gray-800 px-3 py-1 rounded border border-yellow-600 text-yellow-300 font-bold shadow-md">⚔️ INVASION REWARD: +5 Legendary Cores</div>`;
+                if(Math.random() < 0.005) {
+                    let mythicGear = rollEquipment('mythic');
+                    globalProgression.equipInventory.push(mythicGear);
+                    globalProgression.newItems[mythicGear.type.startsWith('ring') ? 'ring' : mythicGear.type] = true;
+                    rwdCont.innerHTML += `<div class="bg-gray-900 px-3 py-2 rounded border-2 rarity-mythic text-pink-300 font-bold shadow-md anim-mythic-gear">✨ MYTHIC DROP: ${mythicGear.icon} ${mythicGear.name}!</div>`;
+                }
                 // End screen - invasion done
                 title.innerText = "INVASION COMPLETE!"; title.className = "text-4xl font-bold mb-2 text-orange-400 drop-shadow-lg";
                 desc.innerText = `All 10 invaders defeated! Invasion complete.`;

@@ -313,7 +313,8 @@ let globalProgression = {
     skillTreeEnhancements: [],
     burglarDailyPurchases: 0, burglarLastPurchaseDate: '',
     petsOwned: [], petBattlesWon: 0, petBattleWinStreak: 0, petBattleBestStreak: 0,
-    discoveredPets: {}, claimedPetRewards: {}, ultimatePetRewardClaimed: false
+    discoveredPets: {}, claimedPetRewards: {}, ultimatePetRewardClaimed: false,
+    petWinLoss: {}
 };
 const TREE_NODES = [];
 const skillUnlockNodes = [5, 10, 15, 20, 25, 35, 47];
@@ -574,6 +575,7 @@ function loadGameAndContinue() {
         if(globalProgression.discoveredPets === undefined) globalProgression.discoveredPets = {};
         if(globalProgression.claimedPetRewards === undefined) globalProgression.claimedPetRewards = {};
         if(globalProgression.ultimatePetRewardClaimed === undefined) globalProgression.ultimatePetRewardClaimed = false;
+        if(globalProgression.petWinLoss === undefined) globalProgression.petWinLoss = {};
         // Migrate progressStats for existing saves
         if (!player.progressStats) player.progressStats = {};
         let ps = player.progressStats;
@@ -957,7 +959,8 @@ window.startGame = function(classId = 'warrior') {
         skillTreeEnhancements: [],
         burglarDailyPurchases: 0, burglarLastPurchaseDate: '',
         petsOwned: [], petBattlesWon: 0, petBattleWinStreak: 0, petBattleBestStreak: 0,
-        discoveredPets: {}, claimedPetRewards: {}, ultimatePetRewardClaimed: false
+        discoveredPets: {}, claimedPetRewards: {}, ultimatePetRewardClaimed: false,
+        petWinLoss: {}
     };
     player = createFreshPlayer(classId);
     player.maxHp = calculateMaxHp(); player.currentHp = player.maxHp;
