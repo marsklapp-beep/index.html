@@ -247,7 +247,7 @@
                 <button onclick="showGraveyard()" title="Resurrect and fight defeated Bosses" class="bg-gray-800 p-3 rounded-xl border border-gray-700 hover:bg-gray-700 flex flex-col items-center"><span class="text-2xl mb-1">🪦</span><span class="font-bold text-gray-400 text-xs">Graveyard</span></button>
                 
                 <button onclick="showMerchants()" title="Visit merchants for gear, enchants, potions and food" class="bg-gray-800 p-3 rounded-xl border border-gray-700 hover:bg-gray-700 flex flex-col items-center"><span class="text-2xl mb-1">🏪</span><span class="font-bold text-amber-400 text-xs">Merchants</span></button>
-                <button onclick="showWell()" title="Restore yourself and buy temporary blessings" class="bg-gray-800 p-3 rounded-xl border border-gray-700 hover:bg-gray-700 flex flex-col items-center"><span class="text-2xl mb-1">⛲</span><span class="font-bold text-cyan-300 text-xs">Well</span></button>
+                <button onclick="showWell()" title="Restore yourself and buy temporary blessings" class="bg-gray-800 p-3 rounded-xl border border-gray-700 hover:bg-gray-700 flex flex-col items-center relative"><span class="text-2xl mb-1">⛲</span><span class="font-bold text-cyan-300 text-xs">Well</span><span id="hub-well-energy-noti" class="absolute -top-1 -right-1 text-yellow-400 text-sm font-black hidden">❗</span></button>
                 <button onclick="showInventory()" title="View your gathered items, potions, and raw equipment" class="bg-gray-800 p-3 rounded-xl border border-gray-700 hover:bg-gray-700 flex flex-col items-center"><span class="text-2xl mb-1">🧳</span><span class="font-bold text-orange-300 text-xs">Bag</span></button>
 
                 <button onclick="showCodex()" class="bg-gray-800 p-3 rounded-xl border border-gray-700 hover:bg-gray-700 flex flex-col items-center relative">
@@ -308,6 +308,11 @@
                     <span class="text-4xl mb-2">🗡️</span>
                     <span class="font-bold text-red-400 text-sm">Burglar</span>
                     <span class="text-[10px] text-gray-400 mt-1 text-center">Buy combat usable items</span>
+                </button>
+                <button onclick="showWeaponSmith()" class="bg-gray-800 hover:bg-gray-700 border border-gray-600 p-5 rounded-xl flex flex-col items-center transition active:scale-95 shadow-lg">
+                    <span class="text-4xl mb-2">🔨</span>
+                    <span class="font-bold text-yellow-400 text-sm">Weapon Smith</span>
+                    <span class="text-[10px] text-gray-400 mt-1 text-center">Enhance weapons with Titan Shards</span>
                 </button>
             </div>
         </div>
@@ -735,6 +740,7 @@
                 <div class="flex justify-between"><span>🎁 Drop Blessing:</span><span id="well-drop-status" class="font-bold text-purple-300">Inactive</span></div>
                 <div class="flex justify-between"><span>⚡ Energy (50g):</span><span id="well-energy50-status" class="font-bold text-blue-300">Ready</span></div>
                 <div class="flex justify-between"><span>⚡ Energy (100g):</span><span id="well-energy100-status" class="font-bold text-blue-300">Ready</span></div>
+                <div class="flex justify-between"><span>❗ Energy Cap:</span><span id="well-energy-cap-status" class="font-bold text-indigo-300">Locked</span></div>
             </div>
             <div class="grid grid-cols-1 gap-3">
                 <button id="well-heal-btn" onclick="useWellHeal()" class="bg-green-800 hover:bg-green-700 border border-green-500 p-4 rounded-xl text-left disabled:opacity-50">
@@ -756,6 +762,10 @@
                 <button id="well-energy100-btn" onclick="useWellEnergy100()" class="bg-blue-900 hover:bg-blue-800 border border-blue-400 p-4 rounded-xl text-left disabled:opacity-50">
                     <div class="font-bold text-blue-100">⚡ Refill Energy — 100 Gold</div>
                     <div class="text-[11px] text-gray-300">Refills your energy to max. Can be used once per day.</div>
+                </button>
+                <button id="well-energy-cap-btn" onclick="unlockEnergyCapUpgrade()" class="bg-indigo-900 hover:bg-indigo-800 border border-indigo-400 p-4 rounded-xl text-left disabled:opacity-50">
+                    <div class="font-bold text-indigo-200">❗ Unlock Energy Cap 100 — 300 Gold</div>
+                    <div class="text-[11px] text-gray-300">Increases your max energy cap from 50 to 100. You still need to level up to reach energies 51-100. One-time purchase.</div>
                 </button>
             </div>
             <div id="well-log" class="text-center text-cyan-300 font-bold mt-4 min-h-6"></div>
@@ -1034,6 +1044,31 @@
             <p class="text-xs text-gray-500 text-center mb-4 italic">...a shady figure lurks in the shadows...</p>
             <p class="text-xs text-gray-400 text-center mb-4 bg-gray-900 py-2 rounded-lg border border-gray-700">Usable items for combat. Items go to your bag and can be placed in usable slots.<br><span class="text-yellow-400">Max 2 purchases per day.</span></p>
             <div id="burglar-items-list" class="flex flex-col gap-3"></div>
+        </div>
+    </div>
+
+    <!-- WEAPON SMITH SCREEN -->
+    <div id="screen-weaponsmith" class="screen py-8">
+        <div class="w-full max-w-xl px-4 flex flex-col pb-8">
+            <div class="flex justify-between items-center mb-4">
+                <div class="flex gap-2">
+                    <button onclick="showMerchants()" class="btn-back text-yellow-400 px-4 py-2 rounded-lg font-bold flex items-center gap-2"><span>⬅️</span> Merchants</button>
+                    <button onclick="showHub()" class="btn-back text-gray-400 px-4 py-2 rounded-lg font-bold flex items-center gap-2"><span>🏠</span> Town</button>
+                </div>
+                <div class="flex gap-2 items-center">
+                    <div class="text-sm font-bold text-yellow-400 bg-gray-800 px-3 py-1 rounded-full border border-yellow-700">💰 <span id="ws-gold-display">0</span></div>
+                    <div class="text-sm font-bold text-cyan-300 bg-gray-800 px-3 py-1 rounded-full border border-cyan-700">🔱 <span id="ws-shards-display">0</span></div>
+                </div>
+            </div>
+            <h2 class="text-3xl font-bold mb-1 text-yellow-400 text-center tracking-widest drop-shadow-md">🔨 WEAPON SMITH</h2>
+            <p class="text-xs text-gray-400 text-center mb-4 bg-gray-900 py-2 rounded-lg border border-gray-700">
+                Use 🔱 Titan Shards to enhance your weapons.<br>
+                <span class="text-yellow-400">Cost: 50 💰 per attempt.</span>
+                <span class="text-red-400 ml-2">40% chance of failure.</span><br>
+                <span class="text-green-400">Base: +30 dmg | Each level: +10 more | Max: Lv.100 (+5% dmg bonus)</span>
+            </p>
+            <div id="ws-weapon-list" class="flex flex-col gap-3"></div>
+            <div id="ws-log" class="text-center text-yellow-400 font-bold mt-4 h-6"></div>
         </div>
     </div>
 

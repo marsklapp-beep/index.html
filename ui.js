@@ -233,17 +233,17 @@ function showAttributes() {
                 <div class="font-bold ${a.color} text-sm">${a.name} <span class="text-white ml-2 text-xs">${levelDisplay}</span>${baseNote}</div>
                 <div class="text-[10px] text-gray-400 leading-tight mt-0.5">${a.desc}</div>
             </div>
-            <div class="flex flex-col gap-1 w-full">
-                <button onclick="allocateAttribute('${a.id}',100)" class="w-full bg-gray-700 hover:bg-gray-600 py-1 rounded text-white font-bold transition active:scale-95 border border-gray-500 text-xs disabled:opacity-50" ${plus100Disabled}>+ 100</button>
-                <div class="flex gap-1 w-full">
-                    <button onclick="allocateAttribute('${a.id}',5)" class="flex-1 bg-gray-700 hover:bg-gray-600 py-1 rounded text-white font-bold transition active:scale-95 border border-gray-500 text-xs disabled:opacity-50" ${plus5Disabled}>+ 5</button>
-                    <button onclick="allocateAttribute('${a.id}',1)" class="flex-1 bg-gray-700 hover:bg-gray-600 py-1 rounded text-white font-bold transition active:scale-95 border border-gray-500 text-sm disabled:opacity-50" ${plusDisabled}>+</button>
+            <div class="flex gap-2 w-full items-stretch">
+                <div class="flex flex-col gap-1 flex-1">
+                    <button onclick="deallocateAttribute('${a.id}',100)" class="w-full bg-red-800 hover:bg-red-700 py-1 rounded text-white font-bold transition active:scale-95 border border-red-600 text-xs disabled:opacity-50" ${minus100Disabled}>- 100</button>
+                    <button onclick="deallocateAttribute('${a.id}',5)" class="w-full bg-red-800 hover:bg-red-700 py-1 rounded text-white font-bold transition active:scale-95 border border-red-600 text-xs disabled:opacity-50" ${minus5Disabled}>- 5</button>
+                    <button onclick="deallocateAttribute('${a.id}',1)" class="w-full bg-red-800 hover:bg-red-700 py-1 rounded text-white font-bold transition active:scale-95 border border-red-600 text-sm disabled:opacity-50" ${minusDisabled}>-</button>
                 </div>
-                <div class="flex gap-1 w-full">
-                    <button onclick="deallocateAttribute('${a.id}',5)" class="flex-1 bg-red-800 hover:bg-red-700 py-1 rounded text-white font-bold transition active:scale-95 border border-red-600 text-xs disabled:opacity-50" ${minus5Disabled}>- 5</button>
-                    <button onclick="deallocateAttribute('${a.id}',1)" class="flex-1 bg-red-800 hover:bg-red-700 py-1 rounded text-white font-bold transition active:scale-95 border border-red-600 text-sm disabled:opacity-50" ${minusDisabled}>-</button>
+                <div class="flex flex-col gap-1 flex-1">
+                    <button onclick="allocateAttribute('${a.id}',100)" class="w-full bg-gray-700 hover:bg-gray-600 py-1 rounded text-white font-bold transition active:scale-95 border border-gray-500 text-xs disabled:opacity-50" ${plus100Disabled}>+ 100</button>
+                    <button onclick="allocateAttribute('${a.id}',5)" class="w-full bg-gray-700 hover:bg-gray-600 py-1 rounded text-white font-bold transition active:scale-95 border border-gray-500 text-xs disabled:opacity-50" ${plus5Disabled}>+ 5</button>
+                    <button onclick="allocateAttribute('${a.id}',1)" class="w-full bg-gray-700 hover:bg-gray-600 py-1 rounded text-white font-bold transition active:scale-95 border border-gray-500 text-sm disabled:opacity-50" ${plusDisabled}>+</button>
                 </div>
-                <button onclick="deallocateAttribute('${a.id}',100)" class="w-full bg-red-800 hover:bg-red-700 py-1 rounded text-white font-bold transition active:scale-95 border border-red-600 text-xs disabled:opacity-50" ${minus100Disabled}>- 100</button>
             </div>
         `;
         list.appendChild(btn);
@@ -434,8 +434,8 @@ function rollEquipment(forcedRarity = null) {
     
     let mult = RARITY_MULTS[r]; 
 
-    // Item level: random in [playerLevel - 5, playerLevel + 5], clamped to min 1
-    let itemLevel = Math.max(1, player.lvl + Math.floor(Math.random() * 11) - 5);
+    // Item level: random in [playerLevel - 5, playerLevel + 5], clamped to min 1, max 100
+    let itemLevel = Math.min(100, Math.max(1, player.lvl + Math.floor(Math.random() * 11) - 5));
     let totalPts = itemLevel * mult;
 
     // Class-specific weapon naming
@@ -1352,7 +1352,7 @@ function showInventory() {
     let inv = globalProgression.inventory;
     const matList = document.getElementById('inv-materials-list'); matList.innerHTML = '';
     let hasMats = false;
-    ['ench_common', 'ench_rare', 'ench_epic', 'ench_legendary', 'herb_red', 'herb_blue', 'fish_1', 'fish_2', 'fish_3', 'fish_4', 'fish_5', 'fish_6', 'soul_pebbles'].forEach(key => {
+    ['ench_common', 'ench_rare', 'ench_epic', 'ench_legendary', 'herb_red', 'herb_blue', 'fish_1', 'fish_2', 'fish_3', 'fish_4', 'fish_5', 'fish_6', 'soul_pebbles', 'titan_shard'].forEach(key => {
         if(inv[key] > 0) { hasMats = true; matList.innerHTML += `<div class="bag-item p-3 rounded-xl flex justify-between items-center shadow-inner"><span class="text-lg">${MAT_ICONS[key]} ${MAT_NAMES[key]}</span> <span class="text-yellow-400 font-bold">${inv[key]}</span></div>`; }
     });
     document.getElementById('inv-mats-header').style.display = hasMats ? 'block' : 'none';
@@ -1437,7 +1437,8 @@ function generateShopGear() {
         
         let item = rollEquipment(rarity);
         let mult = RARITY_MULTS[rarity];
-        let cost = Math.floor(20 * player.lvl * mult * (0.8 + Math.random()*0.4));
+        // Daily shop equipment/weapons are 50% cheaper
+        let cost = Math.floor(20 * player.lvl * mult * (0.8 + Math.random()*0.4) * 0.5);
         globalProgression.shopGear.push({ item: item, cost: cost, bought: false });
     }
     saveGame();
@@ -1716,6 +1717,112 @@ function burglarBuy(itemId) {
     showBurglar();
 }
 
+// --- WEAPON SMITH ---
+function showWeaponSmith() {
+    const p = globalProgression;
+    document.getElementById('ws-gold-display').innerText = p.gold;
+    document.getElementById('ws-shards-display').innerText = p.inventory.titan_shard || 0;
+    document.getElementById('ws-log').innerText = '';
+
+    const list = document.getElementById('ws-weapon-list');
+    list.innerHTML = '';
+
+    // Get all equipped and inventory weapons
+    let weapons = [];
+    if(p.equipped) {
+        let w = p.equipped['weapon'];
+        if(w) weapons.push({ item: w, source: 'equipped', label: '(Equipped)' });
+    }
+    (p.equipInventory || []).filter(e => e.type === 'weapon').forEach(e => {
+        weapons.push({ item: e, source: 'inventory', label: '(Inventory)' });
+    });
+
+    if(weapons.length === 0) {
+        list.innerHTML = '<p class="text-gray-500 text-sm text-center">No weapons found. Equip or obtain a weapon first.</p>';
+        switchScreen('screen-weaponsmith');
+        return;
+    }
+
+    weapons.forEach(({ item, source, label }) => {
+        let enhLvl = item.weaponEnhance || 0;
+        let isMaxed = enhLvl >= 100;
+        let enhBonus = enhLvl > 0 ? 30 + (enhLvl - 1) * 10 : 0; // 30 at lvl1, +10 per level
+        let enhLabel = enhLvl > 0 ? `+${enhBonus} dmg` : 'Not Enhanced';
+        let maxBonus = isMaxed ? ' (+5% dmg bonus!)' : '';
+        let canEnhance = !isMaxed && (p.inventory.titan_shard || 0) >= 1 && p.gold >= 50;
+
+        let div = document.createElement('div');
+        div.className = `bg-gray-800 border-2 rarity-${item.rarity} p-3 rounded-lg shadow-md`;
+        div.innerHTML = `
+            <div class="flex justify-between items-center mb-2">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl">${item.icon}</span>
+                    <div>
+                        <div class="font-bold text-white text-sm">${item.name} ${label}</div>
+                        <div class="text-xs text-yellow-300">Enhance Lv. ${enhLvl}/100${isMaxed ? ' (MAX)' : ''}</div>
+                        <div class="text-xs text-green-400">${enhLabel}${maxBonus}</div>
+                    </div>
+                </div>
+                <button onclick="enhanceWeapon('${item.id}')" 
+                    class="bg-yellow-700 hover:bg-yellow-600 text-white px-3 py-2 rounded font-bold text-xs transition active:scale-95 shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                    ${canEnhance ? '' : 'disabled'}>
+                    🔨 Enhance<br><span class="text-yellow-300">50💰 + 1🔱</span>
+                </button>
+            </div>
+            <div class="text-[10px] text-gray-400">Next level: +${enhLvl === 0 ? 30 : 10} dmg (${isMaxed ? 'MAX' : '40% fail rate'})</div>
+        `;
+        list.appendChild(div);
+    });
+
+    switchScreen('screen-weaponsmith');
+}
+
+function enhanceWeapon(itemId) {
+    const p = globalProgression;
+    const log = document.getElementById('ws-log');
+
+    // Find weapon by id
+    let item = null;
+    if(p.equipped && p.equipped['weapon'] && p.equipped['weapon'].id === itemId) {
+        item = p.equipped['weapon'];
+    }
+    if(!item) {
+        item = (p.equipInventory || []).find(e => e.id === itemId && e.type === 'weapon');
+    }
+
+    if(!item) { log.innerText = 'Weapon not found!'; return; }
+    let enhLvl = item.weaponEnhance || 0;
+    if(enhLvl >= 100) { log.innerText = 'Already at max enhancement level!'; return; }
+    if((p.inventory.titan_shard || 0) < 1) { log.innerText = 'Not enough Titan Shards!'; playSound('lose'); return; }
+    if(p.gold < 50) { log.innerText = 'Not enough Gold! (50 needed)'; playSound('lose'); return; }
+
+    // Consume resources
+    p.gold -= 50;
+    p.inventory.titan_shard = (p.inventory.titan_shard || 0) - 1;
+
+    // 40% failure rate
+    if(Math.random() < 0.40) {
+        log.innerText = '💥 Enhancement failed! Resources consumed.';
+        playSound('lose');
+    } else {
+        let newLvl = enhLvl + 1;
+        item.weaponEnhance = newLvl;
+        // Apply bonus damage: at level 1: +30, at level N: 30 + (N-1)*10
+        let dmgAdd = newLvl === 1 ? 30 : 10; // adds 30 first time, 10 each subsequent time
+        item.stats.dmg = (item.stats.dmg || 0) + dmgAdd;
+        if(newLvl === 100) {
+            item.weaponEnhanceMaxBonus = true; // flag for +5% dmg
+            log.innerText = `⭐ MAX ENHANCE reached! +5% damage bonus granted!`;
+        } else {
+            log.innerText = `✅ Enhancement success! Lv.${newLvl} (+${dmgAdd} dmg added)`;
+        }
+        playSound('win');
+    }
+
+    saveGame();
+    showWeaponSmith();
+}
+
 // --- INVASION ---
 function showInvasion() {
     document.getElementById('invasion-gold-display').innerText = globalProgression.gold;
@@ -1906,6 +2013,8 @@ function petBattleAction(playerAction) {
 function petBattleRoundEnd(playerWon) {
     if(playerWon) {
         globalProgression.gold += 50;
+        // Drop a Titan Shard for winning
+        globalProgression.inventory.titan_shard = (globalProgression.inventory.titan_shard || 0) + 1;
         let xpGain = Math.floor(getXpForNextLevel(player.lvl) * 0.01);
         player.xp += xpGain;
         globalProgression.petBattlesWon = (globalProgression.petBattlesWon || 0) + 1;
@@ -1916,7 +2025,7 @@ function petBattleRoundEnd(playerWon) {
         checkLevelUp();
         let ps = ensureProgressStats();
         ps.battlesWon = (ps.battlesWon || 0) + 1;
-        document.getElementById('pb-result-text').innerText = `🎉 You won! +50 Gold, +${xpGain} XP\nStreak: ${globalProgression.petBattleWinStreak}`;
+        document.getElementById('pb-result-text').innerText = `🎉 You won! +50 Gold, +1 🔱 Titan Shard, +${xpGain} XP\nStreak: ${globalProgression.petBattleWinStreak}`;
         playSound('win');
         showPetBattleVictory();
         saveGame();
@@ -2036,17 +2145,20 @@ function showWell() {
     document.getElementById('well-drop-status').innerText = !canUseDrop ? 'Used Today' : p.wellDropBattles > 0 ? `${p.wellDropBattles} battles left` : 'Inactive';
     document.getElementById('well-energy50-status').innerText = canUseEnergy50 ? 'Ready' : 'Used Today';
     document.getElementById('well-energy100-status').innerText = canUseEnergy100 ? 'Ready' : 'Used Today';
+    document.getElementById('well-energy-cap-status').innerText = p.energyCapUnlocked ? '✅ Unlocked' : 'Locked';
     
     const healBtn = document.getElementById('well-heal-btn');
     const xpBtn = document.getElementById('well-xp-btn');
     const dropBtn = document.getElementById('well-drop-btn');
     const energy50Btn = document.getElementById('well-energy50-btn');
     const energy100Btn = document.getElementById('well-energy100-btn');
+    const energyCapBtn = document.getElementById('well-energy-cap-btn');
     healBtn.disabled = p.gold < 50;
     xpBtn.disabled = !canUseXp || p.gold < 20;
     dropBtn.disabled = !canUseDrop || p.gold < 20;
     energy50Btn.disabled = !canUseEnergy50 || p.gold < 50;
     energy100Btn.disabled = !canUseEnergy100 || p.gold < 100;
+    energyCapBtn.disabled = p.energyCapUnlocked || p.gold < 300;
 
     document.getElementById('well-log').innerText = '';
     switchScreen('screen-well');
@@ -2097,7 +2209,7 @@ function useWellEnergy50() {
     const log = document.getElementById('well-log');
     if((p.wellLastEnergy50Date || '') === today) { log.innerText = 'Energy refill (50g) already used today.'; playSound('lose'); return; }
     if(p.gold < 50) { log.innerText = 'Not enough Gold!'; playSound('lose'); return; }
-    let maxEnergy = Math.min(50, 10 + (player.lvl - 1));
+    let maxEnergy = getMaxEnergy();
     p.gold -= 50; p.energy = maxEnergy; p.wellLastEnergy50Date = today; saveGame(); updateEnergy();
     log.innerText = `⚡ Energy refilled to ${maxEnergy}!`; playSound('chest');
     showWell();
@@ -2107,9 +2219,23 @@ function useWellEnergy100() {
     const log = document.getElementById('well-log');
     if((p.wellLastEnergy100Date || '') === today) { log.innerText = 'Energy refill (100g) already used today.'; playSound('lose'); return; }
     if(p.gold < 100) { log.innerText = 'Not enough Gold!'; playSound('lose'); return; }
-    let maxEnergy = Math.min(50, 10 + (player.lvl - 1));
+    let maxEnergy = getMaxEnergy();
     p.gold -= 100; p.energy = maxEnergy; p.wellLastEnergy100Date = today; saveGame(); updateEnergy();
     log.innerText = `⚡ Energy refilled to ${maxEnergy}!`; playSound('chest');
+    showWell();
+}
+
+function unlockEnergyCapUpgrade() {
+    const p = globalProgression;
+    const log = document.getElementById('well-log');
+    if(p.energyCapUnlocked) { log.innerText = 'Energy cap already unlocked!'; return; }
+    if(p.gold < 300) { log.innerText = 'Not enough Gold! (Need 300)'; playSound('lose'); return; }
+    p.gold -= 300;
+    p.energyCapUnlocked = true;
+    log.innerText = '❗ Energy cap upgraded to 100! Level up to reach energies 51-100.';
+    playSound('win');
+    saveGame();
+    updateEnergy();
     showWell();
 }
 
@@ -2323,7 +2449,8 @@ const ENEMY_SKILL_POOL = [
     { id: 'guard', name: 'Guard', cd: 5, desc: 'Reduces damage by 50% for 2 turns' },
     { id: 'mend', name: 'Mend', cd: 5, desc: 'Increases own damage by 15% for 3 turns' },
     { id: 'boink', name: 'Boink', cd: 5, desc: 'Deals double damage in one hit' },
-    { id: 'reflect', name: 'Reflect', cd: 5, desc: 'Reflects 15% of damage taken back for 2-3 turns' }
+    { id: 'reflect', name: 'Reflect', cd: 5, desc: 'Reflects 15% of damage taken back for 2-3 turns' },
+    { id: 'silence', name: 'Silenced', cd: 5, desc: 'Silences 1 random hero skill slot (1-5) for 1 turn' }
 ];
 
 function assignEnemySkills(enemy) {
@@ -2459,11 +2586,13 @@ function generateEnemies() {
         let e = { shield: 0, healBlock: 0, defReduction: 0, bleedStacks: 0, bleedTurns: 0, burnStacks: 0, burnTurns: 0, poisonStacks: 0, poisonTurns: 0, skipChance: 0, skipTurns: 0, dmgTakenMult: 1, dmgTakenTurns: 0, dodgeTurns: 0, rarity: 'common', isBoss: false };
         
         if (currentMode === 'dungeon' && activeDungeonRoom === 5) {
+            // Dungeon difficulty: Tier N = max(1, (N-1)*2.5) multiplier relative to Tier 1
+            let dungeonDiffMult = activeDungeonTier === 1 ? 1 : (activeDungeonTier - 1) * 2.5;
             e.lvl = activeDungeonTier * 5; 
             let dBoss = BOSS_TEMPLATES['dungeon'][Math.floor(Math.random() * BOSS_TEMPLATES['dungeon'].length)];
             e.name = dBoss.name; e.avatar = dBoss.avatar;
-            e.maxHp = Math.floor(150 * activeDungeonTier * dBoss.hpMult * 1.5); 
-            e.baseDmg = e.lvl * 3 * dBoss.dmgMult * 1.5 * (1 + (e.lvl - 1) * 0.01);
+            e.maxHp = Math.floor(150 * dungeonDiffMult * dBoss.hpMult * 1.5); 
+            e.baseDmg = Math.max(1, Math.floor(e.lvl * 3 * dBoss.dmgMult * 1.5 * dungeonDiffMult));
             e.rarity = 'boss'; e.isBoss = true;
             e.templateMults = { hpMult: dBoss.hpMult, dmgMult: dBoss.dmgMult };
         } else if (isBossFight) {
@@ -2490,9 +2619,9 @@ function generateEnemies() {
             if (e.rarity !== 'common') { e.name = `${e.rarity.charAt(0).toUpperCase() + e.rarity.slice(1)} ${e.name}`; }
 
             let rMult = RARITY_MULTS[e.rarity] || 1;
-            let dungeonMult = currentMode === 'dungeon' ? 1.5 : 1;
-            e.maxHp = Math.max(1, Math.floor(25 * t.hpMult * (1 + (e.lvl - 1) * 0.4) * rMult * dungeonMult)); 
-            e.baseDmg = Math.max(1, Math.floor(e.lvl * rMult * dungeonMult * (1 + (e.lvl - 1) * 0.01))); 
+            let dungeonDiffMult = currentMode === 'dungeon' ? (activeDungeonTier === 1 ? 1.5 : (activeDungeonTier - 1) * 2.5 * 1.5) : 1;
+            e.maxHp = Math.max(1, Math.floor(25 * t.hpMult * (1 + (e.lvl - 1) * 0.4) * rMult * dungeonDiffMult)); 
+            e.baseDmg = Math.max(1, Math.floor(e.lvl * rMult * dungeonDiffMult * (1 + (e.lvl - 1) * 0.01))); 
         }
 
         assignEnemySkills(e);
@@ -2528,11 +2657,12 @@ function startBattle(isNewEncounter = false) {
     player.rageUsed = false; player.divineShieldUsed = false; player.reflectUsed = false; player.usedConsumableThisTurn = false;
     player.reAliveArmed = false; player.reAliveUsed = false;
     player.rageActive = player.rageActive || 0;
-    // Reset usable item cooldowns at battle start
+    // Reset usable item cooldowns at battle start (but NOT skill cooldowns - those are global)
     if(!player.usableCooldowns) player.usableCooldowns = {};
     if(!player.skillCooldowns) player.skillCooldowns = {};
     Object.keys(player.usableCooldowns).forEach(k => player.usableCooldowns[k] = 0);
-    Object.keys(player.skillCooldowns).forEach(k => player.skillCooldowns[k] = 0);
+    // Clear any silenced slots at battle start
+    player.silencedSlots = {};
     combatLog = [`Encountered ${enemies.length} enemies!`, "Fight!"]; isPlayerTurn = true;
     updateCombatUI(); renderSkills(); renderUsableSlots(); switchScreen('screen-combat');
     if(isAutoBattle) setTimeout(processAutoTurn, 500);
@@ -2966,7 +3096,7 @@ function renderSkills() {
                 btn.className = `${slotClass} skill-btn flex-1 p-2 rounded-lg font-bold text-white shadow-lg active:scale-95 flex flex-col items-center justify-center ${slotColor}`;
                 btn.innerHTML = `<div class="text-xs md:text-sm truncate w-full px-1">${skill.name}</div><div class="text-[10px] md:text-xs opacity-75">${cd > 0 ? `(CD:${cd})` : ''}</div>`;
             }
-            btn.disabled = cd > 0 || !isPlayerTurn || isAutoBattle || !combatActive || player.stunned > 0;
+            btn.disabled = cd > 0 || !isPlayerTurn || isAutoBattle || !combatActive || player.stunned > 0 || (player.silencedSlots && player.silencedSlots[slotIndex] > 0);
             btn.onmouseenter = () => { if (descDisplay && skill.desc) descDisplay.innerText = skill.desc; };
             btn.onmouseleave = () => { if (descDisplay) descDisplay.innerText = defaultDesc; };
             btn.onclick = () => { if (descDisplay && skill.desc) descDisplay.innerText = skill.desc; usePlayerSkill(slotIndex); };
@@ -3031,16 +3161,21 @@ function processAutoTurn() {
     let available = [];
     for(let i=0; i<5; i++) {
         let sIdx = player.equippedSkills[i];
+        // Skip silenced slots
+        if(player.silencedSlots && player.silencedSlots[i] > 0) continue;
         if(sIdx === 'woh') {
             // Use a high mult so auto-battle always prioritises WoH when off cooldown
-            if(!((player.wayOfHeavensCooldown || 0) > 0)) { available.push({ i: i, skill: { type: 'attack', mult: 999 } }); }
-        } else if(sIdx !== null && sIdx !== undefined && !(player.skillCooldowns[sIdx] > 0)) { available.push({ i: i, skill: player.data.skills[sIdx] }); }
+            if(!((player.wayOfHeavensCooldown || 0) > 0)) { available.push({ i: i, skill: { type: 'attack', mult: 999 }, slotPriority: 1 }); }
+        } else if(sIdx !== null && sIdx !== undefined && !(player.skillCooldowns[sIdx] > 0)) {
+            // Slot 0 is the basic hit - give it lower priority (slotPriority 0 = low, 1 = normal)
+            available.push({ i: i, skill: player.data.skills[sIdx], slotPriority: i === 0 ? 0 : 1 });
+        }
     }
     // Check standalone Way of the Heavens (6th dedicated slot — unlocked but not equipped in slots 0-4)
     let wohEnh = (globalProgression.skillTreeEnhancements || []).find(e => e.type === 'wayOfHeavens');
     let wohInSlot = player.equippedSkills.includes('woh');
     if (wohEnh && !wohInSlot && !((player.wayOfHeavensCooldown || 0) > 0)) {
-        available.push({ i: 'woh6', skill: { type: 'attack', mult: 999 }, isStandaloneWoh: true });
+        available.push({ i: 'woh6', skill: { type: 'attack', mult: 999 }, isStandaloneWoh: true, slotPriority: 1 });
     }
     if(available.length === 0) {
         isPlayerTurn = false;
@@ -3048,13 +3183,17 @@ function processAutoTurn() {
         return; 
     }
     
-    let chosen = available[0]; 
-    let healSkill = available.find(x => x.skill.type === 'heal');
-    let buffSkill = available.find(x => x.skill.type === 'buff');
+    // Prefer non-slot-0 skills; only fall back to slot 0 (basic hit) if nothing else available
+    let nonBasicAvailable = available.filter(x => x.slotPriority > 0);
+    let workingSet = nonBasicAvailable.length > 0 ? nonBasicAvailable : available;
+    
+    let chosen = workingSet[0]; 
+    let healSkill = workingSet.find(x => x.skill.type === 'heal');
+    let buffSkill = workingSet.find(x => x.skill.type === 'buff');
     
     if(healSkill && hpPct < 0.5) chosen = healSkill;
     else if(buffSkill && Math.random() < 0.3) chosen = buffSkill;
-    else { let attacks = available.filter(x => x.skill.type === 'attack').sort((a,b) => (b.skill.mult * (b.skill.hits || 1)) - (a.skill.mult * (a.skill.hits || 1))); if(attacks.length > 0) chosen = attacks[0]; }
+    else { let attacks = workingSet.filter(x => x.skill.type === 'attack').sort((a,b) => (b.skill.mult * (b.skill.hits || 1)) - (a.skill.mult * (a.skill.hits || 1))); if(attacks.length > 0) chosen = attacks[0]; }
     if (!chosen) { isPlayerTurn = false; setTimeout(() => executeEnemyTurns(0), 500); return; }
     if (chosen.isStandaloneWoh) { useWayOfHeavens(); } else { usePlayerSkill(chosen.i); }
 }
@@ -3141,7 +3280,12 @@ function processRegenAndBuffs() {
 }
 
 function usePlayerSkill(slotIndex) {
-    if (!isPlayerTurn || !combatActive || player.stunned > 0) return; 
+    if (!isPlayerTurn || !combatActive || player.stunned > 0) return;
+    // Check if this slot is silenced
+    if(player.silencedSlots && player.silencedSlots[slotIndex] > 0) {
+        addLog(`Skill slot ${slotIndex + 1} is Silenced!`, 'text-purple-400');
+        return;
+    }
     let skillIdx = player.equippedSkills[slotIndex];
     if(skillIdx === null || skillIdx === undefined) return;
     // Handle Way of the Heavens equipped in a slot
@@ -3535,6 +3679,15 @@ function executeEnemyTurns(enemyIdx, extraTurns = 0) {
         showFloatText(`enemy-card-${enemyIdx}`, `REFLECT`, 'text-cyan-400');
         e.cooldowns['reflect'] = 5;
     }
+    else if (action === 'silence') {
+        // Silence a random skill slot 0-4 (not slot 5/WoH) for 1 turn
+        if(!player.silencedSlots) player.silencedSlots = {};
+        let slotToSilence = Math.floor(Math.random() * 5); // slots 0-4
+        player.silencedSlots[slotToSilence] = 1;
+        addLog(`${e.name} used Silenced! Skill slot ${slotToSilence + 1} is silenced for 1 turn!`, "text-purple-400 font-bold");
+        showFloatText('player-avatar-container', `SILENCED!`, 'text-purple-400');
+        e.cooldowns['silence'] = 5;
+    }
     else { // hit
         playSound('hit'); triggerAnim(`enemy-card-${enemyIdx}`, 'anim-strike'); setTimeout(() => triggerAnim('combat-player-avatar', 'anim-shake'), 150);
         let dmg = Math.floor(e.baseDmg * (0.8 + Math.random() * 0.4));
@@ -3742,6 +3895,11 @@ function startPlayerTurn() {
     // Decrement usable item cooldowns each player turn
     if(!player.usableCooldowns) player.usableCooldowns = {};
     Object.keys(player.usableCooldowns).forEach(k => { if(player.usableCooldowns[k] > 0) player.usableCooldowns[k]--; });
+    // Decrement silenced slot turns
+    if(player.silencedSlots) {
+        Object.keys(player.silencedSlots).forEach(k => { if(player.silencedSlots[k] > 0) player.silencedSlots[k]--; });
+        player.silencedSlots = Object.fromEntries(Object.entries(player.silencedSlots).filter(([,v]) => v > 0));
+    }
     updateCombatUI(); 
 
     if(player.stunned > 0) {
@@ -3983,6 +4141,9 @@ function endBattle(playerWon) {
                 
                 let dRwd = rollEquipment('rare'); globalProgression.equipInventory.push(dRwd); globalProgression.newItems[dRwd.type.startsWith('ring') ? 'ring' : dRwd.type] = true; 
                 rwdCont.innerHTML += `<div class="bg-gray-800 px-3 py-1 rounded border-2 rarity-rare text-blue-300 font-bold shadow-[0_0_10px_rgba(59,130,246,0.3)]">Dungeon Clear: 1 Gear (${dRwd.icon})</div>`;
+                // Award 400 gold for dungeon completion
+                globalProgression.gold += 400;
+                rwdCont.innerHTML += `<div class="bg-gray-800 px-3 py-1 rounded border border-yellow-600 text-yellow-300 font-bold shadow-md">+400 💰 Gold</div>`;
 
                 if(activeDungeonTier === globalProgression.dungeonTier) globalProgression.dungeonTier++; 
             } else { desc.innerText = "Room cleared. Proceed deeper."; btnNext.innerText = "Next Room"; btnNext.classList.remove('hidden'); }
@@ -4039,7 +4200,7 @@ function endBattle(playerWon) {
         
         setTimeout(() => {
             endXpBar.style.transition = 'width 1s ease-out';
-            if (player.xp >= xpNeeded) {
+            if (player.xp >= xpNeeded && player.lvl < 500) {
                 endXpBar.style.width = '100%';
                 setTimeout(() => {
                     playSound('win');
@@ -4080,7 +4241,18 @@ function endBattle(playerWon) {
 
 function handleEndNext() { 
     if (currentMode === 'dungeon') {
-        if (activeDungeonRoom < 5) { activeDungeonRoom++; startBattle(false); }
+        if (activeDungeonRoom < 5) { 
+            activeDungeonRoom++; 
+            // Restore some HP before next room (full restore before boss room 5)
+            if (activeDungeonRoom === 5) {
+                player.currentHp = player.maxHp;
+                player.regenBuffs = []; player.activeBuffs = [];
+                player.stunned = 0; player.bleedStacks = 0; player.bleedTurns = 0; player.dodgeTurns = 0;
+            } else {
+                player.currentHp = Math.min(player.maxHp, Math.ceil(player.currentHp + player.maxHp * 0.20));
+            }
+            startBattle(false); 
+        }
         else { returnToTown(); }
     } else if (currentMode === 'invasion') {
         if(invasionTotalKills < invasionKillGoal && invasionSpawned < invasionKillGoal) {
