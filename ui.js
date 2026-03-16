@@ -4,6 +4,11 @@
 // Fixed background color per skill slot index (slot 1=grey, slots 2-5=green; slot 6/WoH is always yellow)
 const SLOT_FIXED_COLORS = ['bg-gray-700', 'bg-green-700', 'bg-green-700', 'bg-green-700', 'bg-green-700'];
 
+// Fixed shop buy prices by rarity
+const GEAR_BUY_PRICES = { common: 100, rare: 200, epic: 600, legendary: 1000 };
+// Sell prices are 50% of buy price
+const GEAR_SELL_PRICES = { common: 50, rare: 100, epic: 300, legendary: 500 };
+
 // --- CHARACTER / EQUIPMENT SCREEN ---
 function clearCharNotifications() { 
     globalProgression.newItems = {}; 
@@ -1436,9 +1441,7 @@ function generateShopGear() {
         else if(roll < 0.31) rarity = 'rare';
         
         let item = rollEquipment(rarity);
-        let mult = RARITY_MULTS[rarity];
-        // Daily shop equipment/weapons are 50% cheaper
-        let cost = Math.floor(20 * player.lvl * mult * (0.8 + Math.random()*0.4) * 0.5);
+        let cost = GEAR_BUY_PRICES[rarity] || GEAR_BUY_PRICES.common;
         globalProgression.shopGear.push({ item: item, cost: cost, bought: false });
     }
     saveGame();
@@ -1496,7 +1499,9 @@ function sellGear(groupKey, amount) {
     }
 }
 
-function getGearSellPrice(rarity) { return RARITY_MULTS[rarity] * 5; }
+function getGearSellPrice(rarity) {
+    return GEAR_SELL_PRICES[rarity] || GEAR_SELL_PRICES.common;
+}
 
 function sellAllGear() {
     let p = globalProgression;
