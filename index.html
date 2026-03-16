@@ -284,7 +284,7 @@
             <div class="grid grid-cols-2 gap-4">
                 <button onclick="showShop()" class="bg-gray-800 hover:bg-gray-700 border border-gray-600 p-5 rounded-xl flex flex-col items-center transition active:scale-95 shadow-lg">
                     <span class="text-4xl mb-2">🛒</span>
-                    <span class="font-bold text-white text-sm">Shop</span>
+                    <span class="font-bold text-white text-sm">Gear Shop</span>
                     <span class="text-[10px] text-gray-400 mt-1 text-center">Buy gear & sell materials</span>
                 </button>
                 <button onclick="showEnchanter()" class="bg-gray-800 hover:bg-gray-700 border border-gray-600 p-5 rounded-xl flex flex-col items-center transition active:scale-95 shadow-lg">
@@ -769,7 +769,7 @@
                     <div class="text-[11px] text-gray-300">Refills your energy to max. Can be used once per day.</div>
                 </button>
                 <button id="well-energy-cap-btn" onclick="unlockEnergyCapUpgrade()" class="bg-indigo-900 hover:bg-indigo-800 border border-indigo-400 p-4 rounded-xl text-left disabled:opacity-50">
-                    <div class="font-bold text-indigo-200">❗ Unlock Energy Cap 100 — 300 Gold</div>
+                    <div class="font-bold text-indigo-200">❗ Unlock Energy Cap 100 — 500 Gold</div>
                     <div class="text-[11px] text-gray-300">Increases your max energy cap from 50 to 100. You still need to level up to reach energies 51-100. One-time purchase.</div>
                 </button>
             </div>
@@ -777,7 +777,7 @@
         </div>
     </div>
 
-    <!-- EQUIPMENT SHOP -->
+    <!-- GEAR SHOP -->
     <div id="screen-shop" class="screen py-8">
         <div class="w-full max-w-xl px-4 flex flex-col h-full">
             <div class="flex justify-between items-center mb-6">
@@ -787,7 +787,7 @@
                 </div>
                 <div class="text-xl font-bold text-yellow-500 bg-gray-800 px-4 py-1 rounded-full border border-gray-700 shadow-md">💰 <span id="shop-gold-display">0</span></div>
             </div>
-            <h2 class="text-3xl font-bold mb-4 text-gray-300 text-center tracking-widest">EQUIPMENT SHOP</h2>
+            <h2 class="text-3xl font-bold mb-4 text-gray-300 text-center tracking-widest">GEAR SHOP</h2>
             
             <div class="flex justify-between items-center mb-2 border-b border-gray-700 pb-1">
                 <h3 class="font-bold text-blue-400 flex-1 text-center">Daily Equipment Sold</h3>
@@ -1070,7 +1070,7 @@
                 Use 🔱 Titan Shards to enhance your weapons.<br>
                 <span class="text-yellow-400">Cost: 50 💰 per attempt.</span>
                 <span class="text-red-400 ml-2">40% chance of failure.</span><br>
-                <span class="text-green-400">Base: +30 dmg | Each level: +10 more | Max: Lv.100 (+5% dmg bonus)</span>
+                <span class="text-green-400">Base: +30 dmg | Each level: +10 more | Max: Lv.100 (+10% dmg bonus)</span>
             </p>
             <div id="ws-weapon-list" class="flex flex-col gap-3"></div>
             <div id="ws-log" class="text-center text-yellow-400 font-bold mt-4 h-6"></div>
