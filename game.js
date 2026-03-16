@@ -352,6 +352,7 @@ let invasionTotalKills = 0; let invasionKillGoal = 10; let invasionMaxOnScreen =
 // Pet battle state
 let petBattlePlayerPet = null; let petBattleEnemyPet = null; let petBattleActive = false;
 let petBattlePlayerHp = 10; let petBattleEnemyHp = 10; let petBattleLastAction = null; let petBattleEnemyLastAction = null;
+let petBattleAutoMode = false; let petBattleAutoTimer = null;
 
 // --- ENERGY SYSTEM ---
 function getMaxEnergy() {
