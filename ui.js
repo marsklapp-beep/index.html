@@ -2290,7 +2290,7 @@ function unlockEnergyCapUpgrade() {
     const p = globalProgression;
     const log = document.getElementById('well-log');
     if(p.energyCapUnlocked) { log.innerText = 'Energy cap already unlocked!'; return; }
-    if(getMaxEnergy() < 50) { log.innerText = 'Reach 50 Energy first! (Requires level 41+)'; playSound('lose'); return; }
+    if(getMaxEnergy() < 50) { log.innerText = `Reach 50 Energy first! (You currently have ${getMaxEnergy()} max energy)`; playSound('lose'); return; }
     if(p.gold < 300) { log.innerText = 'Not enough Gold! (Need 300)'; playSound('lose'); return; }
     p.gold -= 300;
     p.energyCapUnlocked = true;
